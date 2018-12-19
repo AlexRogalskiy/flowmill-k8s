@@ -2,10 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 ---
-replicaCount: 1
-
-configPath: "config/*.yaml"
-
 image:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/prd/flowmill-agent
   tag: latest
