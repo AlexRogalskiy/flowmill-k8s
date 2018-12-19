@@ -1,0 +1,36 @@
+# Default values for flowmill-agent-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+---
+replicaCount: 1
+
+configPath: "config/*.yaml"
+
+image:
+  repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/prd/flowmill-agent
+  tag: latest
+  pullPolicy: Always
+
+agentConfig:
+  # This is passed along in the agent's config.yaml as the "environment" tag.
+  # It doesn't HAVE to match your cluster name.
+  clusterName: k8s
+
+# Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
+agent:
+  resources: {}
+collector:
+  resources: {}
+
+nodeSelector: {}
+
+tolerations:
+- operator: "Exists"
+  effect: "NoExecute"
+- operator: "Exists"
+  effect: "NoSchedule"
+
+affinity: {}
+
+rbac:
+  create: true

@@ -1,0 +1,60 @@
+---
+# The Flowmill k8s collector consists of two services:
+# 1) k8s-watcher: talks to the Kubernetes API server to determine the current state of
+#    the cluster; sets up watches to be notified of subsequent changes to pods, services
+#    and other resources.
+# 2) k8s-relay: relays the information collected by k8s-watcher to the Flowmill service.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ include "flowmill-k8s-collector.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "flowmill-k8s-collector.fullname" . }}
+    helm.sh/chart: {{ include "flowmill-k8s.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "flowmill-k8s-collector.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        # This is here to allow us to do "zero-downtime" updates without an image change.
+        rollingUpdateVersion: "1"
+      labels:
+        app.kubernetes.io/name: {{ include "flowmill-k8s-collector.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/prd/flowmill-k8s-watcher:latest
+        imagePullPolicy: Always
+        name: flowmill-k8s-watcher
+        resources: {}
+      # k8s-relay, which is a service that the k8s collector talks to.
+      # Currently not configurable, has to be reachable on localhost:8172, so must
+      # share a pod with the k8s collector above.  Talks in turn to flowmill-server
+      # on our end, so needs the same auth.yaml as the agent.
+      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/prd/flowmill-k8s-relay:latest
+        imagePullPolicy: Always
+        name: flowmill-k8s-relay
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/flowmill
+          name: flowmill-k8s-relay-config
+      volumes:
+      - name: flowmill-k8s-relay-config
+        configMap:
+          name: {{ include "flowmill-k8s.fullname" . }}-config
+      securityContext: {}
+      {{- if .Values.rbac.create }}
+      serviceAccount: {{ include "flowmill-k8s-collector.fullname" . }}
+      serviceAccountName: {{ include "flowmill-k8s-collector.fullname" . }}
+      {{- end }}
+      terminationGracePeriodSeconds: 30

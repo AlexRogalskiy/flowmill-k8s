@@ -1,0 +1,3 @@
+# The config/auth.yaml file is specific to a customer and should not be
+# checked into git.
+/config/auth.yaml

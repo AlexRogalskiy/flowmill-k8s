@@ -1,0 +1,80 @@
+---
+# Flowmill agent daemonset: deploys the flowmill agent to each node
+# in the cluster.  The agent needs to be able to compile and install
+# eBPF programs in the node's kernel, so needs to run as root and
+# needs to mount /lib/modules and /usr/src from the node itself.
+# You will need to install the kernel headers package on all k8s nodes.
+# For Ubuntu and other Debian family releases:
+#    sudo apt-get install --yes linux-headers-$(uname -r)
+# For Fedora family and Amazon Linux:
+#    sudo yum install -y kernel-devel-$(uname -r)
+#
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "flowmill-agent-k8s.fullname" . }}
+  annotations:
+  labels:
+    app.kubernetes.io/name: {{ include "flowmill-agent-k8s.fullname" . }}
+    helm.sh/chart: {{ include "flowmill-k8s.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "flowmill-agent-k8s.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        release_number: "3"
+      labels:
+        app.kubernetes.io/name: {{ include "flowmill-agent-k8s.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ include "flowmill-agent-k8s.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # TODO: liveness probe
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /usr/src
+            name: usr-src
+            readOnly: true
+          - mountPath: /lib/modules
+            name: lib-modules
+            readOnly: true
+          - mountPath: /etc/flowmill
+            name: {{ include "flowmill-agent-k8s.fullname" . }}-config
+          # FIXME: define & mount config
+      hostNetwork: true
+      hostPID: true
+      volumes:
+      - name: {{ include "flowmill-agent-k8s.fullname" . }}-config
+        configMap:
+          name: {{ include "flowmill-k8s.fullname" . }}-config
+      - name: usr-src
+        hostPath:
+          path: /usr/src
+          type: Directory
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
