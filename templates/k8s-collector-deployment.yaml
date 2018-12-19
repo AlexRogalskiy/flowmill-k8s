@@ -33,7 +33,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/prd/flowmill-k8s-watcher:latest
+      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-watcher:latest
         imagePullPolicy: Always
         name: flowmill-k8s-watcher
         resources: {}
@@ -41,7 +41,7 @@ spec:
       # Currently not configurable, has to be reachable on localhost:8172, so must
       # share a pod with the k8s collector above.  Talks in turn to flowmill-server
       # on our end, so needs the same auth.yaml as the agent.
-      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/prd/flowmill-k8s-relay:latest
+      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-relay:latest
         imagePullPolicy: Always
         name: flowmill-k8s-relay
         resources: {}
