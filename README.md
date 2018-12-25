@@ -12,7 +12,9 @@ Flowmill will provide (via the config tab on your UI) an auth.yaml file for you.
 ## Deploying
 
 Manually, using Helm:
-```helm install ./ --name flowmill-k8s --namespace flowmill```
+```
+helm install ./ --name flowmill-k8s --namespace flowmill
+```
 
 Using [Ship](https://github.com/replicatedhq/ship):
 ```
@@ -24,10 +26,12 @@ ship init github.com/Flowmill/flowmill-k8s
 ## Upgrading
 
 Manually, using Helm:
-```helm upgrade flowmill-k8s ./```
+```
+helm upgrade flowmill-k8s ./
+```
 
 Using Ship:
 ```
-ship watch && ship udpate```
+ship watch && ship update
 ```
 

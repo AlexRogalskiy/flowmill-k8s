@@ -32,23 +32,30 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-watcher:latest
-        imagePullPolicy: Always
+      - image: "{{ .Values.watcher.repository }}:{{ .Values.watcher.tag }}"
+        imagePullPolicy: {{ .Values.watcher.pullPolicy }}
         name: flowmill-k8s-watcher
         resources:
-{{ toYaml .Values.collector.resources | indent 12 }}
+{{ toYaml .Values.watcher.resources | indent 12 }}
       # k8s-relay, which is a service that the k8s collector talks to.
       # Currently not configurable, has to be reachable on localhost:8172, so must
       # share a pod with the k8s collector above.  Talks in turn to flowmill-server
       # on our end, so needs the same auth.yaml as the agent.
-      - image: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-relay:latest
-        imagePullPolicy: Always
+      - image: "{{ .Values.relay.repository }}:{{ .Values.relay.tag }}"
+        imagePullPolicy: {{ .Values.relay.pullPolicy }}
         name: flowmill-k8s-relay
-        resources: {}
+        resources:
+{{ toYaml .Values.relay.resources | indent 12 }}
+        args:
+        - --auth-config
+        - /etc/flowmill_auth/auth.yaml
+        - --config-file
+        - /etc/flowmill_config/config.yaml
         volumeMounts:
-        - mountPath: /etc/flowmill
+        - mountPath: /etc/flowmill_config/config.yaml
           name: flowmill-k8s-relay-config
-        - mountPath: /etc/flowmill/auth.yaml
+          subPath: config.yaml
+        - mountPath: /etc/flowmill_auth/auth.yaml
           name: flowmill-k8s-auth-config
           subPath: auth.yaml
       volumes:

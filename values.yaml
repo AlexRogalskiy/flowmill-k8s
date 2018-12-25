@@ -1,20 +1,22 @@
-# Default values for flowmill-agent-k8s.
+# Default values for flowmill-k8s.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-image:
-  repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-agent
-  tag: latest
-  pullPolicy: Always
-
-agentConfig:
-  # This is passed along in the agent's config.yaml as the "environment" tag.
-  # It doesn't HAVE to match your cluster name.
-  clusterName: k8s
 
 # Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
 agent:
+  repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-agent
+  tag: 0.7.4
+  pullPolicy: Always
   resources: {}
-collector:
+relay:
+  repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-relay
+  tag: 0.7.4
+  pullPolicy: Always
+  resources: {}
+watcher:
+  repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-watcher
+  tag: 0.7.4
+  pullPolicy: Always
   resources: {}
 
 nodeSelector: {}
@@ -28,9 +30,10 @@ tolerations:
 flowmill:
   clusterName: my-kubernetes-cluster
 
-  # Set this to the name of an existing secret if this is already deployed
-  # authYamlExistingSecret:
+  # You can either set this to the name of an existing secret if one is already deployed...
+  authYamlExistingSecret: null
 
+  # ... or you can add auth.yaml contents to .flowmill.authYaml
   authYaml:
     dst: MISSING
     port: MISSING

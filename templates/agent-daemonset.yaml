@@ -33,8 +33,13 @@ spec:
     spec:
       containers:
         - name: {{ include "flowmill-agent-k8s.fullname" . }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
+          imagePullPolicy: {{ .Values.agent.pullPolicy }}
+          args:
+          - --auth-config
+          - /etc/flowmill_auth/auth.yaml
+          - --config-file
+          - /etc/flowmill_config/config.yaml
           # TODO: liveness probe
           resources:
 {{ toYaml .Values.agent.resources | indent 12 }}
@@ -47,12 +52,12 @@ spec:
           - mountPath: /lib/modules
             name: lib-modules
             readOnly: true
-          - mountPath: /etc/flowmill
+          - mountPath: /etc/flowmill_config/config.yaml
             name: {{ include "flowmill-agent-k8s.fullname" . }}-config
-          - mountPath: /etc/flowmill/auth.yaml
+            subPath: config.yaml
+          - mountPath: /etc/flowmill_auth/auth.yaml
             name: flowmill-k8s-auth-config
             subPath: auth.yaml
-          # FIXME: define & mount config
       hostNetwork: true
       hostPID: true
       volumes:
@@ -61,10 +66,10 @@ spec:
           name: {{ include "flowmill-k8s.fullname" . }}-config
       - name: flowmill-k8s-auth-config
         secret:
-{{- if not .Values.flowmill.authYamlExistingSecret }}
-          secretName: {{ template "flowmill-k8s.fullname" . }}-auth
-{{- else }}
+{{- if .Values.flowmill.authYamlExistingSecret }}
           secretName: {{ .Values.flowmill.authYamlExistingSecret }}
+{{- else }}
+          secretName: {{ template "flowmill-k8s.fullname" . }}-auth
 {{- end }}
       - name: usr-src
         hostPath:
