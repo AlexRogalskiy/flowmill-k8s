@@ -6,17 +6,17 @@
 agent:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-agent
   tag: 0.7.5
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources: {}
 relay:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-relay
   tag: 0.7.5
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources: {}
 watcher:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-watcher
   tag: 0.7.5
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources: {}
 
 nodeSelector: {}
