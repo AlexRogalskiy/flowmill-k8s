@@ -1,7 +1,7 @@
 
 # Prerequisites
 
-Flowmill will provide (via the config tab on your UI) an auth.yaml file for you. You can deploy this to your cluster manually and update the `flowmill.authYamlExistingSecret` value to that secret name, or simply paste the contents of this file into the `Values.yaml`.
+Flowmill will provide (via the "install" tab on your UI) an auth.yaml file for you. You can deploy this to your cluster manually and update the `flowmill.authYamlExistingSecret` value to that secret name, or simply paste the contents of this file into the `Values.yaml`.
 
 * Download your auth.yaml and paste into Values.yaml or deploy manually.
 * Optionally name your cluster in `.flowmill.clusterName`.
