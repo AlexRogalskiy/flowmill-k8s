@@ -12,8 +12,9 @@ Flowmill will provide (via the "install" tab on your UI) an auth.yaml file for y
 ## Deploying
 
 Manually, using Helm:
+Clone this repo and copy the values-<customer>.yaml file provided by Flowmill to the root of the repo, then run:
 ```
-helm install ./ --name flowmill-k8s --namespace flowmill
+helm install ./ --name flowmill-k8s --namespace flowmill --values values-<customer>.yaml
 ```
 
 Using [Ship](https://github.com/replicatedhq/ship):
