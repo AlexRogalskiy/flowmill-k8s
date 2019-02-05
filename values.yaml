@@ -5,7 +5,7 @@
 # Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
 agent:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-agent
-  tag: 0.7.5
+  tag: 0.7.6
   pullPolicy: IfNotPresent
   resources: {}
 relay:
@@ -53,3 +53,15 @@ affinity: {}
 
 rbac:
   create: true
+
+podSecurityPolicy:
+  enabled: false
+  annotations: {}
+    ## Specify pod annotations
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#seccomp
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#sysctl
+    ##
+    # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+    # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
