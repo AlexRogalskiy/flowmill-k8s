@@ -5,7 +5,7 @@
 # Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
 agent:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-agent
-  tag: 0.7.6
+  tag: 0.7.7
   pullPolicy: IfNotPresent
   resources: {}
 relay:
