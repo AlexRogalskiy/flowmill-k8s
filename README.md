@@ -1,10 +1,10 @@
 
 # Prerequisites
 
-Flowmill will provide (via the "install" tab on your UI) an auth.yaml file for you. You can deploy this to your cluster manually and update the `flowmill.authYamlExistingSecret` value to that secret name, or simply paste the contents of this file into the `Values.yaml`.
+Flowmill will provide (via the "install" tab on your UI) a customized values-<customer>.yaml file for you.
 
-* Download your auth.yaml and paste into Values.yaml or deploy manually.
-* Optionally name your cluster in `.flowmill.clusterName`.
+* Download your values-<customer>.yaml and save in this repo's root directory.
+* [optional] Name your cluster in `.flowmill.clusterName`.
 * Install kernel headers on all nodes in your cluster:
   * sudo apt-get install --yes linux-headers-$(uname -r)  # For Debian, Ubuntu
   * sudo yum install -y kernel-devel-$(uname -r)  # For RHEL, CentOS, Amazon Linux
