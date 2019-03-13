@@ -1,9 +1,9 @@
 
 # Prerequisites
 
-Flowmill will provide (via the "install" tab on your UI) a customized values-<customer>.yaml file for you.
+Flowmill will provide (via the "install" tab on your UI) a customized `values-<customer>.yaml` file for you.
 
-* Download your values-<customer>.yaml and save in this repo's root directory.
+* Download your `values-<customer>.yaml` and save in this repo's root directory.
 * [optional] Name your cluster in `.flowmill.clusterName`.
 * Install kernel headers on all nodes in your cluster:
   * sudo apt-get install --yes linux-headers-$(uname -r)  # For Debian, Ubuntu
@@ -12,7 +12,7 @@ Flowmill will provide (via the "install" tab on your UI) a customized values-<cu
 ## Deploying
 
 Manually, using Helm:
-Clone this repo and copy the values-<customer>.yaml file provided by Flowmill to the root of the repo, then run:
+Clone this repo and copy the `values-<customer>.yaml` file provided by Flowmill to the root of the repo, then run:
 ```
 helm install ./ --name flowmill-k8s --namespace flowmill --values values-<customer>.yaml
 ```
