@@ -31,23 +31,8 @@ flowmill:
   clusterName: my-kubernetes-cluster
 
   # You can either set this to the name of an existing secret if one is already deployed...
+  # or place auth.yaml in ./static/auth.yaml
   authYamlExistingSecret: null
-
-  # ... or you can add auth.yaml contents to .flowmill.authYaml
-  authYaml:
-    dst: MISSING
-    port: MISSING
-    key: |
-      -----BEGIN PRIVATE KEY-----
-      ....
-      -----END PRIVATE KEY-----
-    crt: |
-      -----BEGIN CERTIFICATE-----
-      ...
-      -----END CERTIFICATE-----
-    auth: MISSING
-    apikey: MISSING
-    tenant: MISSING
 
 affinity: {}
 
