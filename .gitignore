@@ -1,3 +1,5 @@
 # Our naming convention is values-<name>.yaml for customized values files.
 # We don't want those committed to the repo.
 values-*.yaml
+# auth.yaml in static/ subdirectory also should not be committed
+/static
