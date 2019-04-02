@@ -10,7 +10,7 @@ agent:
   resources: {}
 relay:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-k8s-relay
-  tag: 0.7.12
+  tag: 0.7.12-2
   pullPolicy: IfNotPresent
   resources: {}
 watcher:

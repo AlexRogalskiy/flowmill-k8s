@@ -1,3 +1,8 @@
+
+## [0.2.5] - 2019-04-02
+### Changed
+    - Increased in-flight limit on k8s-collector for larger environments
+
 ## [0.2.4] - 2019-04-02
 ### Changed
     - Override default k8s-relay heartbeat; set to 10 seconds
