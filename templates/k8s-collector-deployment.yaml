@@ -51,6 +51,8 @@ spec:
         - /etc/flowmill_auth/auth.yaml
         - --config-file
         - /etc/flowmill_config/config.yaml
+        - --heartbeat-interval-sec
+        - "10"
         volumeMounts:
         - mountPath: /etc/flowmill_config/config.yaml
           name: flowmill-k8s-relay-config
