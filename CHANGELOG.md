@@ -1,4 +1,10 @@
 
+## [0.2.6] - 2019-04-10
+### Added
+    - Support for "ownerless" pods in k8s
+### Changed
+    - Improved NAT tracking
+
 ## [0.2.5] - 2019-04-02
 ### Changed
     - Increased in-flight limit on k8s-collector for larger environments
