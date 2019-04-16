@@ -1,4 +1,8 @@
 
+## [0.2.7] - 2019-04-16
+### Changed
+    - More ECS improvements
+
 ## [0.2.6] - 2019-04-10
 ### Added
     - Support for "ownerless" pods in k8s
