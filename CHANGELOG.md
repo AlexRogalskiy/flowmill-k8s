@@ -1,3 +1,7 @@
+## [0.2.8] - 2019-06-04
+### Changed
+    - Use a projected mount for config files; potential workaround for kubernetes/kubernetes#68211
+    - New k8s-relay version (adjusted Dockerfile entrypoint, no significant code changes)
 
 ## [0.2.7] - 2019-04-16
 ### Changed

@@ -48,29 +48,32 @@ spec:
 {{ toYaml .Values.relay.resources | indent 12 }}
         args:
         - --auth-config
-        - /etc/flowmill_auth/auth.yaml
+        - /etc/flowmill/auth.yaml
         - --config-file
-        - /etc/flowmill_config/config.yaml
+        - /etc/flowmill/config.yaml
         - --heartbeat-interval-sec
         - "10"
         volumeMounts:
-        - mountPath: /etc/flowmill_config/config.yaml
+        - mountPath: /etc/flowmill
           name: flowmill-k8s-relay-config
-          subPath: config.yaml
-        - mountPath: /etc/flowmill_auth/auth.yaml
-          name: flowmill-k8s-auth-config
-          subPath: auth.yaml
       volumes:
       - name: flowmill-k8s-relay-config
-        configMap:
-          name: {{ include "flowmill-k8s.fullname" . }}-config
-      - name: flowmill-k8s-auth-config
-        secret:
-{{- if not .Values.flowmill.authYamlExistingSecret }}
-          secretName: {{ template "flowmill-k8s.fullname" . }}-auth
-{{- else }}
-          secretName: {{ .Values.flowmill.authYamlExistingSecret }}
-{{- end }}
+        projected:
+          sources:
+            - configMap:
+                name: {{ include "flowmill-k8s.fullname" . }}-config
+                items:
+                - key: config.yaml
+                  path: config.yaml
+            - secret:
+                {{- if not .Values.flowmill.authYamlExistingSecret }}
+                name: {{ template "flowmill-k8s.fullname" . }}-auth
+                {{- else }}
+                name: {{ .Values.flowmill.authYamlExistingSecret }}
+                {{- end }}
+                items:
+                - key: auth.yaml
+                  path: auth.yaml
       securityContext: {}
       {{- if .Values.rbac.create }}
       serviceAccount: {{ include "flowmill-k8s-collector.fullname" . }}
