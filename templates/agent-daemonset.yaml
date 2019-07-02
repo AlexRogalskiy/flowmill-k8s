@@ -36,10 +36,7 @@ spec:
           image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
           imagePullPolicy: {{ .Values.agent.pullPolicy }}
           args:
-          - --auth-config
-          - /etc/flowmill/auth.yaml
-          - --config-file
-          - /etc/flowmill/config.yaml
+{{- toYaml .Values.agentArgs | nindent 12 }}
           # TODO: liveness probe
           resources:
 {{ toYaml .Values.agent.resources | indent 12 }}

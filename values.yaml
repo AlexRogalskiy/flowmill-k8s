@@ -36,6 +36,12 @@ flowmill:
 
 affinity: {}
 
+agentArgs:
+  - --auth-config
+  - /etc/flowmill/auth.yaml
+  - --config-file
+  - /etc/flowmill/config.yaml
+  
 rbac:
   create: true
 
