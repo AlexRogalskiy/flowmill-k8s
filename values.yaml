@@ -5,7 +5,7 @@
 # Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
 agent:
   repository: 966881513036.dkr.ecr.us-east-1.amazonaws.com/flowmill/flowmill-agent
-  tag: 0.7.14.d91eaf10
+  tag: cf-v0.7.14-313-g78637843-1562093427825
   pullPolicy: IfNotPresent
   resources: {}
 relay:
@@ -41,7 +41,8 @@ agentArgs:
   - /etc/flowmill/auth.yaml
   - --config-file
   - /etc/flowmill/config.yaml
-  
+  - --enable-http-metrics
+
 rbac:
   create: true
 
