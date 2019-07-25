@@ -1,3 +1,7 @@
+## [0.2.9] - 2019-07-24
+### Changed
+    - New Agent version with multiple enhancements
+
 ## [0.2.8] - 2019-06-04
 ### Changed
     - Use a projected mount for config files; potential workaround for kubernetes/kubernetes#68211
