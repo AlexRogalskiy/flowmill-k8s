@@ -38,6 +38,8 @@ spec:
           args:
             - --authz-server
             - {{ default "flowmill.prd.flowtune.io" .Values.flowmill.services.host }}
+            - --config-file
+            - /etc/flowmill/config.yaml
 {{- toYaml .Values.agent.args | nindent 12 }}
           # TODO: liveness probe
           env:

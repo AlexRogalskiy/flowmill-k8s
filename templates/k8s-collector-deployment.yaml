@@ -50,6 +50,8 @@ spec:
 {{- toYaml .Values.relay.args | nindent 10 }}
           - --authz-server
           - {{ default "flowmill.prd.flowtune.io" .Values.flowmill.services.host }}
+          - --config-file
+          - /etc/flowmill/config.yaml
         env:
 {{- if hasKey .Values "chamberService" }}
           - name: "CHAMBER_SERVICE_NAME"

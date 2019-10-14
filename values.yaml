@@ -11,8 +11,6 @@ agent:
   pullPolicy: IfNotPresent
   resources: {}
   args:
-    - --config-file
-    - /etc/flowmill/config.yaml
     - --log-console
     - --enable-http-metrics
 
@@ -31,8 +29,6 @@ relay:
   pullPolicy: IfNotPresent
   resources: {}
   args:
-    - --config-file
-    - /etc/flowmill/config.yaml
     - --heartbeat-interval-sec
     - "10"
 
@@ -58,7 +54,7 @@ flowmill:
     host: customer.prd.flowtune.io
   intake:
     name: customer-server
-    host: customer-intake.flowtune.io
+    host: customer-intake.prd.flowmtune.io
 
 affinity: {}
 
