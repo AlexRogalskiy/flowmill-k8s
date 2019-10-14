@@ -36,8 +36,32 @@ spec:
           image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
           imagePullPolicy: {{ .Values.agent.pullPolicy }}
           args:
-{{- toYaml .Values.agentArgs | nindent 12 }}
+            - --authz-server
+            - {{ default "flowmill.prd.flowtune.io" .Values.flowmill.services.host }}
+{{- toYaml .Values.agent.args | nindent 12 }}
           # TODO: liveness probe
+          env:
+{{- if hasKey .Values "chamberService" }}
+            - name: "CHAMBER_SERVICE_NAME"
+              value: {{ quote .Values.chamberService }}
+{{- else }}
+            - name: "FLOWMILL_AUTH_KEY_ID"
+              valueFrom:
+                secretKeyRef:
+                  key:  flowmill_agent_key_id
+                  name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+            - name: "FLOWMILL_AUTH_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  key:  flowmill_agent_secret
+                  name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+{{- end }}
+            - name: "FLOWMILL_INTAKE_NAME"
+              value: {{ default "flowmill-server" .Values.flowmill.intake.name }}
+            - name: "FLOWMILL_INTAKE_HOST"
+              value: {{ default "flowmill-intake.prd.flowtune.io" .Values.flowmill.intake.host }}
+            - name: "FLOWMILL_INTAKE_PORT"
+              value: "{{ default 443 .Values.flowmill.intake.port }}"
           resources:
 {{ toYaml .Values.agent.resources | indent 12 }}
           securityContext:
@@ -52,6 +76,9 @@ spec:
           - mountPath: /etc/flowmill
             name: {{ include "flowmill-agent-k8s.fullname" . }}-config
             readOnly: true
+          - mountPath: /hostfs/sys/fs/cgroup
+            name: hostfs-sys-fs-cgroup
+            readOnly: true
       hostNetwork: true
       hostPID: true
       volumes:
@@ -63,15 +90,6 @@ spec:
               items:
               - key: config.yaml
                 path: config.yaml
-          - secret:
-              {{- if .Values.flowmill.authYamlExistingSecret }}
-              name: {{ .Values.flowmill.authYamlExistingSecret }}
-              {{- else }}
-              name: {{ template "flowmill-k8s.fullname" . }}-auth
-              {{- end }}
-              items:
-              - key: auth.yaml
-                path: auth.yaml
       - name: usr-src
         hostPath:
           path: /usr/src
@@ -79,6 +97,10 @@ spec:
       - name: lib-modules
         hostPath:
           path: /lib/modules
+          type: Directory
+      - name: hostfs-sys-fs-cgroup
+        hostPath:
+          path: /sys/fs/cgroup
           type: Directory
     {{- with .Values.nodeSelector }}
       nodeSelector:
