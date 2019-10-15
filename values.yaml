@@ -29,8 +29,7 @@ relay:
   pullPolicy: IfNotPresent
   resources: {}
   args:
-    - --heartbeat-interval-sec
-    - "10"
+    - --log-console
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
