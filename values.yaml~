@@ -30,8 +30,6 @@ relay:
   resources: {}
   args:
     - --log-console
-    - --heartbeat-interval-sec
-    - "10"
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
@@ -48,14 +46,14 @@ tolerations:
 - operator: "Exists"
   effect: "NoSchedule"
 
-# TODO: Update these values based on your deployment.  "customer" must be replaced.  
+# TODO: Update these values based on your deployment
 flowmill:
-  clusterName: YOUR_CLUSTER_NAME
+  clusterName: my-kubernetes-cluster
   services:
     host: customer.prd.flowtune.io
   intake:
-    name: flowmill-prd
-    host: customer-intake.prd.flowtune.io
+    name: customer-server
+    host: customer-intake.prd.flowmtune.io
 
 affinity: {}
 
