@@ -7,7 +7,7 @@
 # Configuration for Flowmill's kernel collector
 agent:
   repository: docker.io/flowmill/agent
-  tag: v0.8.0
+  tag: v0.8.444
   pullPolicy: IfNotPresent
   resources: {}
   args:
@@ -18,25 +18,23 @@ agent:
 # TODO: This section can be removed when deploying in a non-AWS environment.
 awsCollector:
   repository: docker.io/flowmill/aws-collector
-  tag: v0.8.0
+  tag: v0.8.444
   pullPolicy: IfNotPresent
   resources: {}
 
 # Configuration for Flowmill's Kubernetes relay.
 relay:
   repository: docker.io/flowmill/k8s-relay
-  tag: v0.8.0
+  tag: v0.8.444
   pullPolicy: IfNotPresent
   resources: {}
   args:
     - --log-console
-    - --heartbeat-interval-sec
-    - "10"
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
   repository: docker.io/flowmill/k8s-watcher
-  tag: v0.8.0
+  tag: v0.8.444
   pullPolicy: IfNotPresent
   resources: {}
 
