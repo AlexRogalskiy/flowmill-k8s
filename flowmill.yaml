@@ -1,0 +1,11 @@
+# TODO: Update these values based on your deployment
+flowmill:
+  clusterName: test-cluster
+  services:
+    host: cluster.prd.flowtune.io
+  intake:
+    name: flowmill-prd
+    host: cluster-intake.prd.flowtune.io
+  agentExistingSecret: null
+  agentKey: "INSERT_AGENT_KEY"
+  agentSecret: "INSERT_AGENT_SECRET"

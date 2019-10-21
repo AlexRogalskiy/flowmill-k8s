@@ -51,13 +51,21 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key:  flowmill_agent_key_id
+                {{- if .Values.flowmill.agentExistingSecret }}
+                  name: {{ .Values.flowmill.agentExistingSecret }}
+                {{- else }}
                   name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+                {{- end }}
             - name: "FLOWMILL_AUTH_SECRET"
               valueFrom:
                 secretKeyRef:
                   key:  flowmill_agent_secret
+                {{- if .Values.flowmill.agentExistingSecret }}
+                  name: {{ .Values.flowmill.agentExistingSecret }}
+                {{- else }}         
                   name: {{ template "flowmill-k8s.fullname" . }}-agent-key
-{{- end }}
+                {{- end }}
+  {{- end }}
             - name: "FLOWMILL_INTAKE_NAME"
               value: {{ default "flowmill-server" .Values.flowmill.intake.name }}
             - name: "FLOWMILL_INTAKE_HOST"
