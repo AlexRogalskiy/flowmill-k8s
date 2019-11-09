@@ -50,7 +50,7 @@ spec:
             - name: "FLOWMILL_AUTH_KEY_ID"
               valueFrom:
                 secretKeyRef:
-                  key:  flowmill_agent_key_id
+                  key: flowmill_agent_key_id
                 {{- if .Values.flowmill.agentExistingSecret }}
                   name: {{ .Values.flowmill.agentExistingSecret }}
                 {{- else }}
@@ -59,7 +59,7 @@ spec:
             - name: "FLOWMILL_AUTH_SECRET"
               valueFrom:
                 secretKeyRef:
-                  key:  flowmill_agent_secret
+                  key: flowmill_agent_secret
                 {{- if .Values.flowmill.agentExistingSecret }}
                   name: {{ .Values.flowmill.agentExistingSecret }}
                 {{- else }}         

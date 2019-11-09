@@ -1,12 +1,17 @@
-# TODO: Update these values based on your deployment
+# TODO: Update the values in CAPS based on your deployment
 flowmill:
-  clusterName: test-cluster
+  clusterName: TEST_CLUSTER
   services:
-    host: cluster.prd.flowtune.io
+    host: app.prd.flowtune.io
   intake:
     name: flowmill-prd
-    host: cluster-intake.prd.flowtune.io
+    host: CLUSTER-intake.prd.flowtune.io
+
+# If an existing secret should be used for an agent key, enter it here.      
   agentExistingSecret: null
-  agentKey: "INSERT_AGENT_KEY"
-  agentSecret: "INSERT_AGENT_SECRET"
+
+# if agentExistingSecret is null, these values will be used as an agent key
+  agent:
+    keyId: "TODO: INSERT_AGENT_KEY"
+    secret: "TODO: INSERT_AGENT_SECRET"
   
