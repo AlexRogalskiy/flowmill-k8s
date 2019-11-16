@@ -8,21 +8,11 @@ Install kernel headers on all nodes in your cluster:
 ## Deploying
 
 Manually, using Helm:
-* Make sure you have access to the Flowmill frontend.  
-* In the agents tab, create an agent key id and agent secret.
 * Clone this repo
-* Edit the values.yaml file.
-- [Optional] Comment out the awsCollector for non-AWS environments
-- Update the flowmill section with proper "customer" name
-* Create a secret with your agent key id and agent secret
+* Download a customized version of flowmill.yaml from app.prd.flowtune.io or manually edit the flowmill.yaml file
+* Run
 ```
-kubectl -n flowmill create secret generic flowmill-k8s-agent-key \
-     --from-literal=flowmill_agent_key_id=KEY_ID_GOES_HERE \
-     --from-literal=flowmill_agent_secret=SECRET_GOES_HERE
-```
-* Deploy the agents
-```
-helm install ./ --name flowmill-k8s --namespace flowmill --values values.yaml
+helm install ./ --name flowmill-k8s --namespace flowmill --values flowmill.yaml --values values.yaml
 ```
 
 Using [Ship](https://github.com/replicatedhq/ship):
@@ -32,12 +22,11 @@ brew install ship
 ship init github.com/Flowmill/flowmill-k8s
 ```
 
-
 ## Upgrading
 
 Manually, using Helm:
 ```
-helm upgrade flowmill-k8s ./
+helm upgrade flowmill-k8s -f flowmill.yaml -f values.yaml ./
 ```
 
 Using Ship:

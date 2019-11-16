@@ -46,15 +46,6 @@ tolerations:
 - operator: "Exists"
   effect: "NoSchedule"
 
-# TODO: Update these values based on your deployment.  "customer" must be replaced.  
-flowmill:
-  clusterName: YOUR_CLUSTER_NAME
-  services:
-    host: customer.prd.flowtune.io
-  intake:
-    name: flowmill-prd
-    host: customer-intake.prd.flowtune.io
-
 affinity: {}
 
 rbac:
