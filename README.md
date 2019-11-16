@@ -9,7 +9,7 @@ Install kernel headers on all nodes in your cluster:
 
 Manually, using Helm:
 * Clone this repo
-* Download a customized version of flowmill.yaml from app.flowtune.io
+* Download a customized version of flowmill.yaml from app.prd.flowtune.io or manually edit the flowmill.yaml file
 * Run
 ```
 helm install ./ --name flowmill-k8s --namespace flowmill --values flowmill.yaml --values values.yaml
