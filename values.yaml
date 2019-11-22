@@ -4,39 +4,44 @@
 
 # Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
 
+# Follow the "Settings/Deployment" tab of your UI to get the values below
+flowmill:
+  clusterName: TODO_CHOOSE_YOUR_CLUSTER_NAME_HERE
+  tenantName: YOUR_TENANT_NAME
+  services:
+    host: app.flowmill.com
+  intake:
+    host: intake.flowmill.com
+
 # Configuration for Flowmill's kernel collector
 agent:
   repository: docker.io/flowmill/agent
-  tag: v0.8.444
+  tag: v0.8.897
   pullPolicy: IfNotPresent
-  resources: {}
-  args:
-    - --log-console
-    - --enable-http-metrics
+  enableHttpMetrics: true
+  installKernelHeaders: false
+  logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's AWS collector.
 # TODO: This section can be removed when deploying in a non-AWS environment.
 awsCollector:
   repository: docker.io/flowmill/aws-collector
-  tag: v0.8.444
+  tag: v0.8.897
   pullPolicy: IfNotPresent
-  resources: {}
+  logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's Kubernetes relay.
 relay:
   repository: docker.io/flowmill/k8s-relay
-  tag: v0.8.444
+  tag: v0.8.897
   pullPolicy: IfNotPresent
-  resources: {}
-  args:
-    - --log-console
+  logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
   repository: docker.io/flowmill/k8s-watcher
-  tag: v0.8.444
+  tag: v0.8.897
   pullPolicy: IfNotPresent
-  resources: {}
 
 nodeSelector: {}
 

@@ -1,3 +1,4 @@
+{{- if (hasKey .Values "relay") and (hasKey .Values "watcher") }}
 # The Flowmill k8s collector consists of two services:
 # 1) k8s-watcher: talks to the Kubernetes API server to determine the current state of
 #    the cluster; sets up watches to be notified of subsequent changes to pods, services
@@ -35,8 +36,9 @@ spec:
       - image: "{{ .Values.watcher.repository }}:{{ .Values.watcher.tag }}"
         imagePullPolicy: {{ .Values.watcher.pullPolicy }}
         name: flowmill-k8s-watcher
+{{- if hasKey .Values.watcher "resources" }}
         resources:
-{{ toYaml .Values.watcher.resources | indent 12 }}
+{{- end }}
       # k8s-relay, which is a service that the k8s collector talks to.
       # Currently not configurable, has to be reachable on localhost:8172, so must
       # share a pod with the k8s collector above.  Talks in turn to flowmill-server
@@ -44,14 +46,17 @@ spec:
       - image: "{{ .Values.relay.repository }}:{{ .Values.relay.tag }}"
         imagePullPolicy: {{ .Values.relay.pullPolicy }}
         name: flowmill-k8s-relay
+{{- if hasKey .Values.relay "resources" }}
         resources:
 {{ toYaml .Values.relay.resources | indent 12 }}
+{{- end }}
         args:
-{{- toYaml .Values.relay.args | nindent 10 }}
-          - --authz-server
-          - {{ default "flowmill.prd.flowtune.io" .Values.flowmill.services.host }}
           - --config-file
           - /etc/flowmill/config.yaml
+{{- if hasKey .Values.relay "logLevel" }}
+          - --log-console
+          - --{{ .Values.relay.logLevel }}
+{{- end}}
         env:
 {{- if hasKey .Values "chamberService" }}
           - name: "CHAMBER_SERVICE_NAME"
@@ -72,14 +77,18 @@ spec:
                 key: flowmill_agent_secret
               {{- if .Values.flowmill.agentExistingSecret }}
                 name: {{ .Values.flowmill.agentExistingSecret }}
-              {{- else }}         
+              {{- else }}
                 name: {{ template "flowmill-k8s.fullname" . }}-agent-key
               {{- end }}
 {{- end }}
+{{- if hasKey .Values.flowmill.services "host" }}
+          - name: "FLOWMILL_AUTHZ_SERVER"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+{{- end}}
           - name: "FLOWMILL_INTAKE_NAME"
-            value: {{ default "flowmill-server" .Values.flowmill.intake.name }}
+            value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_HOST"
-            value: {{ default "flowmill-intake.prd.flowtune.io" .Values.flowmill.intake.host }}
+            value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_PORT"
             value: "{{ default 443 .Values.flowmill.intake.port }}"
         volumeMounts:
@@ -89,12 +98,15 @@ spec:
       - image: "{{ .Values.awsCollector.repository }}:{{ .Values.awsCollector.tag }}"
         imagePullPolicy: {{ .Values.awsCollector.pullPolicy }}
         name: flowmill-aws-collector
+{{- if hasKey .Values.awsCollector "resources" }}
         resources:
 {{ toYaml .Values.awsCollector.resources | indent 10 }}
+{{- end }}
         args:
-          - --authz-server
-          - {{ default "flowmill.prd.flowtune.io" .Values.flowmill.services.host }}
+{{- if hasKey .Values.awsCollector "logLevel" }}
           - --log-console
+          - --{{ .Values.awsCollector.logLevel }}
+{{- end}}
         env:
 {{- if hasKey .Values "chamberService" }}
           - name: "CHAMBER_SERVICE_NAME"
@@ -115,14 +127,18 @@ spec:
                 key: flowmill_agent_secret
               {{- if .Values.flowmill.agentExistingSecret }}
                 name: {{ .Values.flowmill.agentExistingSecret }}
-              {{- else }}         
+              {{- else }}
                 name: {{ template "flowmill-k8s.fullname" . }}-agent-key
               {{- end }}
 {{- end }}
+{{- if hasKey .Values.flowmill.services "host" }}
+          - name: "FLOWMILL_AUTHZ_SERVER"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+{{- end}}
           - name: "FLOWMILL_INTAKE_NAME"
-            value: {{ default "flowmill-server" .Values.flowmill.intake.name }}
+            value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_HOST"
-            value: {{ default "flowmill-intake.prd.flowtune.io" .Values.flowmill.intake.host }}
+            value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_PORT"
             value: "{{ default 443 .Values.flowmill.intake.port }}"
 {{- end }}
@@ -141,3 +157,4 @@ spec:
       serviceAccountName: {{ include "flowmill-k8s-collector.fullname" . }}
       {{- end }}
       terminationGracePeriodSeconds: 30
+{{- end }}
