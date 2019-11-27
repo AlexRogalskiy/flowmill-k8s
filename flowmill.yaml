@@ -3,8 +3,7 @@
 #       https://app.flowmill.com/agents?activeTab=deployment
 flowmill:
   clusterName: YOUR_CLUSTER_NAME
-  intake:
-    name: TENANT
+  tenantName: TENANT
 
   # If using an existing secret for the agent key, enter it here.
   agentExistingSecret: null
