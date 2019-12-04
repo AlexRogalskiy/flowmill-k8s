@@ -16,7 +16,7 @@ flowmill:
 # Configuration for Flowmill's kernel collector
 agent:
   repository: docker.io/flowmill/agent
-  tag: v0.8.897
+  tag: v0.8.1000
   pullPolicy: IfNotPresent
   enableHttpMetrics: true
   installKernelHeaders: false
@@ -26,21 +26,21 @@ agent:
 # TODO: This section can be removed when deploying in a non-AWS environment.
 awsCollector:
   repository: docker.io/flowmill/aws-collector
-  tag: v0.8.897
+  tag: v0.8.1000
   pullPolicy: IfNotPresent
   logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's Kubernetes relay.
 relay:
   repository: docker.io/flowmill/k8s-relay
-  tag: v0.8.897
+  tag: v0.8.1000
   pullPolicy: IfNotPresent
   logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
   repository: docker.io/flowmill/k8s-watcher
-  tag: v0.8.897
+  tag: v0.8.1000
   pullPolicy: IfNotPresent
 
 nodeSelector: {}
