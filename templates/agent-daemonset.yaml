@@ -8,6 +8,19 @@
 # For Fedora family and Amazon Linux:
 #    sudo yum install -y kernel-devel-$(uname -r)
 #
+# If are you unable to install Kernel Headers, we can generate agent
+# images with headers preinstalled but these are then tied to a single
+# kernel version.
+{{- if .Values.agent.kernelHeaderVersion }}
+{{-   if .Values.agent.installKernelHeaders }}
+{{-     fail "Cannot set both kernelHeaderVersion and installKernelHeaders values" }}
+{{-   end }}
+{{-   $validKernelVersions := list "4.15.0-1037-aws" }}
+{{-   if not (has .Values.agent.kernelHeaderVersion $validKernelVersions) }}
+{{-     fail "Unsupported kernelVersion -- please contact Flowmill support for help" }}
+{{-   end }}
+{{- end }}
+
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -33,7 +46,11 @@ spec:
     spec:
       containers:
         - name: {{ include "flowmill-agent-k8s.fullname" . }}
+{{- if not .Values.agent.kernelHeaderVersion }}
           image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
+{{- else }}
+          image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}-{{ .Values.agent.kernelHeaderVersion }}"
+{{- end }}
           imagePullPolicy: {{ .Values.agent.pullPolicy }}
           args:
             - --config-file
@@ -94,7 +111,7 @@ spec:
             name: etc-apt
             readOnly: true
           # TODO: also support `yum` for RedHat based distros
-{{- else }}
+{{- else if not .Values.agent.kernelHeaderVersion }}
           - mountPath: /usr/src
             name: usr-src
             readOnly: true
@@ -124,7 +141,7 @@ spec:
         hostPath:
           path: /etc/apt
           type: DirectoryOrCreate
-{{- else }}
+{{- else if not .Values.agent.kernelHeaderVersion }}
       - name: usr-src
         hostPath:
           path: /usr/src
