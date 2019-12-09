@@ -18,7 +18,7 @@ agent:
   repository: docker.io/flowmill/agent
   tag: v0.8.1000
   pullPolicy: IfNotPresent
-  enableHttpMetrics: true
+  kernelHeaderVersion: null # Hardcode which kernel headers to use, requires pre-built Agent image. Mutually exclusive with installKernelHeaders.
   installKernelHeaders: false
   logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
