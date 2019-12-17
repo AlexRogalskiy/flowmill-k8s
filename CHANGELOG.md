@@ -1,3 +1,14 @@
+## [0.8.1067] - 2019-12-16
+### Changed
+    - Multiple enhancements and data quality fixes
+
+## [0.8.897] - 2019-11-22
+### Changed
+    - New Agent version with multiple enhancements
+    - Intake and Services now hosted on flowmill.com
+    - Reduced number of required fields in chart
+    - Automatically create or reuse agent key secret
+
 ## [0.2.9] - 2019-07-24
 ### Changed
     - New Agent version with multiple enhancements
