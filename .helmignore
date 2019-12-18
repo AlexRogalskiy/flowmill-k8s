@@ -11,7 +11,7 @@
 .hgignore
 .svn/
 # Common backup files
-*.swp
+*.sw?
 *.bak
 *.tmp
 *~
@@ -19,3 +19,6 @@
 .project
 .idea/
 *.tmproj
+.vscode/
+# Git temporaries
+*.orig

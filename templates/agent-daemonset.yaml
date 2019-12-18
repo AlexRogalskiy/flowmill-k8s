@@ -55,15 +55,14 @@ spec:
           args:
             - --config-file
             - /etc/flowmill/config.yaml
-{{- if (hasKey .Values.agent "enableHttpMetrics") and .Values.agent.enableHttpMetrics }}
-            - --enable-http-metrics
-{{- end }}
 {{- if hasKey .Values.agent "logLevel" }}
             - --log-console
             - --{{ .Values.agent.logLevel }}
 {{- end}}
           # TODO: liveness probe
           env:
+            - name: "FLOWMILL_DISABLE_HTTP_METRICS"
+              value: {{ quote (default false .Values.agent.disableHttpMetrics) }}
 {{- if hasKey .Values "chamberService" }}
             - name: "CHAMBER_SERVICE_NAME"
               value: {{ quote .Values.chamberService }}

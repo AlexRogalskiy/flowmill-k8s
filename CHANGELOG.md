@@ -1,3 +1,7 @@
+## [0.8.1067] - 2019-12-16
+### Changed
+    - Multiple enhancements and data quality fixes
+
 ## [0.8.897] - 2019-11-22
 ### Changed
     - New Agent version with multiple enhancements
