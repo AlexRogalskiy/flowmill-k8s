@@ -1,0 +1,74 @@
+# Default values for flowmill-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
+
+# Follow the "Settings/Deployment" tab of your UI to get the values below
+flowmill:
+  clusterName: TODO_CHOOSE_YOUR_CLUSTER_NAME_HERE
+  tenantName: YOUR_TENANT_NAME
+  services:
+    host: app.flowmill.com
+  intake:
+    host: intake.flowmill.com
+
+# Configuration for Flowmill's kernel collector
+agent:
+  repository: docker.io/flowmill/agent
+  tag: v0.8.1260
+  pullPolicy: IfNotPresent
+  kernelHeaderVersion: null # Hardcode which kernel headers to use, requires pre-built Agent image. Mutually exclusive with installKernelHeaders.
+  installKernelHeaders: false # set to true when running in GCP using the COS VM image
+  #logLevel: info  #  possible values: { error | warn | info | debug | trace }
+
+# Configuration for Flowmill's AWS collector.
+# TODO: This section can be removed when deploying in a non-AWS environment.
+awsCollector:
+  repository: docker.io/flowmill/aws-collector
+  tag: v0.8.1260
+  pullPolicy: IfNotPresent
+  #logLevel: info  #  possible values: { error | warn | info | debug | trace }
+
+# Configuration for Flowmill's Kubernetes relay.
+relay:
+  repository: docker.io/flowmill/k8s-relay
+  tag: v0.8.1260
+  pullPolicy: IfNotPresent
+  #logLevel: info  #  possible values: { error | warn | info | debug | trace }
+
+# Configuration for Flowmill's Kubernetes watcher.
+watcher:
+  repository: docker.io/flowmill/k8s-watcher
+  tag: v0.8.1260
+  pullPolicy: IfNotPresent
+
+nodeSelector: {}
+
+tolerations:
+- operator: "Exists"
+  effect: "NoExecute"
+- operator: "Exists"
+  effect: "NoSchedule"
+
+affinity: {}
+
+rbac:
+  create: true
+
+# If using segment.io's chamber (https://github.com/segmentio/chamber) to store agent keys,
+# uncomment below and update the chamber service name for which secrets were stored.
+# Agent keys must be stored using secret keys `FLOWMILL_AUTH_KEY_ID` and `FLOWMILL_AUTH_SECRET`.
+#chamberService: "my_chamber_service"
+
+podSecurityPolicy:
+  enabled: false
+  annotations: {}
+    ## Specify pod annotations
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#seccomp
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#sysctl
+    ##
+    # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+    # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
