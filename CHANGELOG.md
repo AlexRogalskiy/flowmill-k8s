@@ -1,3 +1,7 @@
+## [0.8.1260] - 2020-01-17
+### Changed
+    - Improve error handling in agent authentication process
+
 ## [0.8.1067] - 2019-12-16
 ### Changed
     - Multiple enhancements and data quality fixes

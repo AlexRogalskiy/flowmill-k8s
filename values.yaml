@@ -16,31 +16,31 @@ flowmill:
 # Configuration for Flowmill's kernel collector
 agent:
   repository: docker.io/flowmill/agent
-  tag: v0.8.1067
+  tag: v0.8.1260
   pullPolicy: IfNotPresent
   kernelHeaderVersion: null # Hardcode which kernel headers to use, requires pre-built Agent image. Mutually exclusive with installKernelHeaders.
-  installKernelHeaders: false
-  logLevel: info  #  possible values: { error | warn | info | debug | trace }
+  installKernelHeaders: false # set to true when running in GCP using the COS VM image
+  #logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's AWS collector.
 # TODO: This section can be removed when deploying in a non-AWS environment.
 awsCollector:
   repository: docker.io/flowmill/aws-collector
-  tag: v0.8.1067
+  tag: v0.8.1260
   pullPolicy: IfNotPresent
-  logLevel: info  #  possible values: { error | warn | info | debug | trace }
+  #logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's Kubernetes relay.
 relay:
   repository: docker.io/flowmill/k8s-relay
-  tag: v0.8.1067
+  tag: v0.8.1260
   pullPolicy: IfNotPresent
-  logLevel: info  #  possible values: { error | warn | info | debug | trace }
+  #logLevel: info  #  possible values: { error | warn | info | debug | trace }
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
   repository: docker.io/flowmill/k8s-watcher
-  tag: v0.8.1067
+  tag: v0.8.1260
   pullPolicy: IfNotPresent
 
 nodeSelector: {}

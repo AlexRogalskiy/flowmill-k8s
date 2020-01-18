@@ -2,3 +2,5 @@
 /static
 # vim swap files
 *.sw?
+# git conflict backup
+*.orig
