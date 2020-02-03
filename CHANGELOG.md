@@ -1,3 +1,9 @@
+## [0.8.1376] - 2020-02-03
+### Changed
+    - Flowmill agents automatically fetch and cache kernel headers for supported distros, if headers are not already pre-installed on the node.
+    - Improve error handling in agent authentication process
+    - Multiple enhancements and data quality fixes
+
 ## [0.8.1260] - 2020-01-17
 ### Changed
     - Improve error handling in agent authentication process
@@ -46,3 +52,4 @@
 ### Fixed
     - [relay] Retry connections on DNS error
     - [agent] Fixed rare crash at startup
+
