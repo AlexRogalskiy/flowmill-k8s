@@ -1,0 +1,176 @@
+# Flowmill agent daemonset: deploys the flowmill agent to each node
+# in the cluster.  The agent needs to be able to compile and install
+# eBPF programs in the node's kernel, so needs to run as root and
+# needs to mount /lib/modules and /usr/src from the node itself.
+# You will need to install the kernel headers package on all k8s nodes.
+# For Ubuntu and other Debian family releases:
+#    sudo apt-get install --yes linux-headers-$(uname -r)
+# For Fedora family and Amazon Linux:
+#    sudo yum install -y kernel-devel-$(uname -r)
+#
+# If are you unable to install Kernel Headers, we can generate agent
+# images with headers preinstalled but these are then tied to a single
+# kernel version.
+{{- if .Values.agent.kernelHeaderVersion }}
+{{-   if .Values.agent.installKernelHeaders }}
+{{-     fail "Cannot set both kernelHeaderVersion and installKernelHeaders values" }}
+{{-   end }}
+{{-   $validKernelVersions := list "4.15.0-1037-aws" }}
+{{-   if not (has .Values.agent.kernelHeaderVersion $validKernelVersions) }}
+{{-     fail "Unsupported kernelVersion -- please contact Flowmill support for help" }}
+{{-   end }}
+{{- end }}
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "flowmill-agent-k8s.fullname" . }}
+  annotations:
+  labels:
+    app.kubernetes.io/name: {{ include "flowmill-agent-k8s.fullname" . }}
+    helm.sh/chart: {{ include "flowmill-k8s.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "flowmill-agent-k8s.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        release_number: "3"
+      labels:
+        app.kubernetes.io/name: {{ include "flowmill-agent-k8s.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ include "flowmill-agent-k8s.fullname" . }}
+{{- if not .Values.agent.kernelHeaderVersion }}
+          image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
+{{- else }}
+          image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}-{{ .Values.agent.kernelHeaderVersion }}"
+{{- end }}
+          imagePullPolicy: {{ .Values.agent.pullPolicy }}
+          args:
+            - --config-file
+            - /etc/flowmill/config.yaml
+{{- if hasKey .Values.agent "logLevel" }}
+            - --log-console
+            - --{{ .Values.agent.logLevel }}
+{{- end}}
+          # TODO: liveness probe
+          env:
+            - name: "FLOWMILL_DISABLE_HTTP_METRICS"
+              value: {{ quote (default false .Values.agent.disableHttpMetrics) }}
+{{- if hasKey .Values "chamberService" }}
+            - name: "CHAMBER_SERVICE_NAME"
+              value: {{ quote .Values.chamberService }}
+{{- else }}
+            - name: "FLOWMILL_AUTH_KEY_ID"
+              valueFrom:
+                secretKeyRef:
+                  key: flowmill_agent_key_id
+                {{- if .Values.flowmill.agentExistingSecret }}
+                  name: {{ .Values.flowmill.agentExistingSecret }}
+                {{- else }}
+                  name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+                {{- end }}
+            - name: "FLOWMILL_AUTH_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  key: flowmill_agent_secret
+                {{- if .Values.flowmill.agentExistingSecret }}
+                  name: {{ .Values.flowmill.agentExistingSecret }}
+                {{- else }}
+                  name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+                {{- end }}
+{{- end }}
+            - name: "FLOWMILL_KERNEL_HEADERS_AUTO_FETCH"
+              value: {{ quote (default true .Values.agent.installKernelHeaders) }}
+{{- if hasKey .Values.flowmill.services "host" }}
+            - name: "FLOWMILL_AUTHZ_SERVER"
+              value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+{{- end}}
+            - name: "FLOWMILL_INTAKE_NAME"
+              value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+            - name: "FLOWMILL_INTAKE_HOST"
+              value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+            - name: "FLOWMILL_INTAKE_PORT"
+              value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- if hasKey .Values.agent "resources" }}
+          resources:
+{{ toYaml .Values.agent.resources | indent 12 }}
+{{- end }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+{{- if not .Values.agent.kernelHeaderVersion }}
+          - mountPath: /var/run/flowmill/host/usr/src
+            name: usr-src
+            readOnly: true
+          - mountPath: /var/run/flowmill/host/lib/modules
+            name: lib-modules
+            readOnly: true
+{{- if (default true .Values.agent.installKernelHeaders) }}
+          - mountPath: /var/run/flowmill/host/etc
+            name: etc
+            readOnly: true
+          - mountPath: /var/run/flowmill/host/cache
+            name: cache
+            readOnly: false
+{{- end }}
+{{- end }}
+          - mountPath: /etc/flowmill
+            name: {{ include "flowmill-agent-k8s.fullname" . }}-config
+            readOnly: true
+          - mountPath: /hostfs/sys/fs/cgroup
+            name: hostfs-sys-fs-cgroup
+            readOnly: true
+      hostNetwork: true
+      hostPID: true
+      volumes:
+      - name: {{ include "flowmill-agent-k8s.fullname" . }}-config
+        projected:
+          sources:
+          - configMap:
+              name: {{ include "flowmill-k8s.fullname" . }}-config
+              items:
+              - key: config.yaml
+                path: config.yaml
+{{- if not .Values.agent.kernelHeaderVersion }}
+      - name: usr-src
+        hostPath:
+          path: /usr/src
+          type: Directory
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+{{- if (default true .Values.agent.installKernelHeaders) }}
+      - name: etc
+        hostPath:
+          path: /etc
+          type: Directory
+      - name: cache
+        hostPath:
+          path: /var/cache
+          type: DirectoryOrCreate
+{{- end }}
+{{- end }}
+      - name: hostfs-sys-fs-cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
