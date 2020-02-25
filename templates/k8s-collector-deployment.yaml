@@ -33,7 +33,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-      - image: "{{ .Values.watcher.repository }}:{{ .Values.watcher.tag }}"
+      - image: "{{ .Values.watcher.repository }}:{{ default .Values.flowmill.version .Values.watcher.tag }}"
         imagePullPolicy: {{ .Values.watcher.pullPolicy }}
         name: flowmill-k8s-watcher
 {{- if hasKey .Values.watcher "resources" }}
@@ -43,7 +43,7 @@ spec:
       # Currently not configurable, has to be reachable on localhost:8172, so must
       # share a pod with the k8s collector above.  Talks in turn to flowmill-server
       # on our end.
-      - image: "{{ .Values.relay.repository }}:{{ .Values.relay.tag }}"
+      - image: "{{ .Values.relay.repository }}:{{ default .Values.flowmill.version .Values.relay.tag }}"
         imagePullPolicy: {{ .Values.relay.pullPolicy }}
         name: flowmill-k8s-relay
 {{- if hasKey .Values.relay "resources" }}
@@ -95,7 +95,7 @@ spec:
         - mountPath: /etc/flowmill
           name: flowmill-k8s-relay-config
 {{- if hasKey .Values "awsCollector" }}
-      - image: "{{ .Values.awsCollector.repository }}:{{ .Values.awsCollector.tag }}"
+      - image: "{{ .Values.awsCollector.repository }}:{{ default .Values.flowmill.version .Values.awsCollector.tag }}"
         imagePullPolicy: {{ .Values.awsCollector.pullPolicy }}
         name: flowmill-aws-collector
 {{- if hasKey .Values.awsCollector "resources" }}

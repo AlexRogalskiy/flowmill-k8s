@@ -1,3 +1,8 @@
+## [0.8.1540] - 2020-02-25
+### Changed
+    - Fix for kernel headers auto-fetching on GCP Container Optimized OS
+    - Multiple enhancements and data quality fixes
+
 ## [0.8.1376] - 2020-02-03
 ### Changed
     - Flowmill agents automatically fetch and cache kernel headers for supported distros, if headers are not already pre-installed on the node.
@@ -52,4 +57,3 @@
 ### Fixed
     - [relay] Retry connections on DNS error
     - [agent] Fixed rare crash at startup
-

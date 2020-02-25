@@ -47,9 +47,9 @@ spec:
       containers:
         - name: {{ include "flowmill-agent-k8s.fullname" . }}
 {{- if not .Values.agent.kernelHeaderVersion }}
-          image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
+          image: "{{ .Values.agent.repository }}:{{ default .Values.flowmill.version .Values.agent.tag }}"
 {{- else }}
-          image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}-{{ .Values.agent.kernelHeaderVersion }}"
+          image: "{{ .Values.agent.repository }}:{{ default .Values.flowmill.version .Values.agent.tag }}-{{ .Values.agent.kernelHeaderVersion }}"
 {{- end }}
           imagePullPolicy: {{ .Values.agent.pullPolicy }}
           args:
