@@ -1,3 +1,8 @@
+## [0.8.1650] - 2020-03-09
+### Changed
+    - Better health reporting for Flowmill collectors
+    - Multiple enhancements and data quality fixes
+
 ## [0.8.1540] - 2020-02-25
 ### Changed
     - Fix for kernel headers auto-fetching on GCP Container Optimized OS

@@ -8,7 +8,7 @@
 flowmill:
   clusterName: TODO_CHOOSE_YOUR_CLUSTER_NAME_HERE
   tenantName: YOUR_TENANT_NAME
-  version: v0.8.1540
+  version: v0.8.1650
   services:
     host: app.flowmill.com
   intake:
