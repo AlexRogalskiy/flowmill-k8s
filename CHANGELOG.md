@@ -1,3 +1,7 @@
+## [0.8.1676] - 2020-03-10
+### Changed
+    - Report process end closer to process exit
+
 ## [0.8.1650] - 2020-03-09
 ### Changed
     - Better health reporting for Flowmill collectors
