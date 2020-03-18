@@ -1,3 +1,7 @@
+## [0.8.1743] - 2020-03-17
+### Changed
+    - Set imagePullPolicy to Always, so restarts pull the latest image with the configured image tag
+
 ## [0.8.1741] - 2020-03-17
     - Release helm charts with `latest-v0.8` tag
 

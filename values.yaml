@@ -17,7 +17,7 @@ flowmill:
 # Configuration for Flowmill's kernel collector
 agent:
   repository: docker.io/flowmill/agent
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
   # uncomment the line below to disable automatic kernel headers fetching
   #installKernelHeaders: false
@@ -31,7 +31,7 @@ agent:
 # TODO: This section can be removed when deploying in a non-AWS environment.
 awsCollector:
   repository: docker.io/flowmill/aws-collector
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
   #log:
   #  # uncomment the line below to change the minimum log level
@@ -41,7 +41,7 @@ awsCollector:
 # Configuration for Flowmill's Kubernetes relay.
 relay:
   repository: docker.io/flowmill/k8s-relay
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
   #log:
   #  # uncomment the line below to change the minimum log level
@@ -51,7 +51,7 @@ relay:
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
   repository: docker.io/flowmill/k8s-watcher
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 nodeSelector: {}
 
