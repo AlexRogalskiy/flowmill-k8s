@@ -8,7 +8,7 @@
 flowmill:
   clusterName: TODO_CHOOSE_YOUR_CLUSTER_NAME_HERE
   tenantName: YOUR_TENANT_NAME
-  version: v0.8.1676
+  version: latest-v0.8
   services:
     host: app.flowmill.com
   intake:
@@ -22,9 +22,10 @@ agent:
   # uncomment the line below to disable automatic kernel headers fetching
   #installKernelHeaders: false
 
-  # uncomment the line below to change the minimum log level
-  # possible values: { error | warn | info | debug | trace }
-  #logLevel: warn
+  #log:
+  #  # uncomment the line below to change the minimum log level
+  #  # possible values: { error | warn | info | debug | trace }
+  #  level: warn
 
 # Configuration for Flowmill's AWS collector.
 # TODO: This section can be removed when deploying in a non-AWS environment.
@@ -32,18 +33,20 @@ awsCollector:
   repository: docker.io/flowmill/aws-collector
   pullPolicy: IfNotPresent
 
-  # uncomment the line below to change the minimum log level
-  # possible values: { error | warn | info | debug | trace }
-  #logLevel: warn
+  #log:
+  #  # uncomment the line below to change the minimum log level
+  #  # possible values: { error | warn | info | debug | trace }
+  #  level: warn
 
 # Configuration for Flowmill's Kubernetes relay.
 relay:
   repository: docker.io/flowmill/k8s-relay
   pullPolicy: IfNotPresent
 
-  # uncomment the line below to change the minimum log level
-  # possible values: { error | warn | info | debug | trace }
-  #logLevel: warn
+  #log:
+  #  # uncomment the line below to change the minimum log level
+  #  # possible values: { error | warn | info | debug | trace }
+  #  level: warn
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:

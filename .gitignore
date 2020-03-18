@@ -4,3 +4,4 @@
 *.sw?
 # git conflict backup
 *.orig
+*.bak

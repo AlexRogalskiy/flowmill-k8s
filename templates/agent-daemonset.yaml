@@ -55,10 +55,23 @@ spec:
           args:
             - --config-file
             - /etc/flowmill/config.yaml
-{{- if hasKey .Values.agent "logLevel" }}
+{{- if hasKey .Values.agent "log" }}
+{{- if hasKey .Values.agent.log "level" }}
             - --log-console
-            - --{{ .Values.agent.logLevel }}
-{{- end}}
+            - --{{ .Values.agent.log.level }}
+{{- if hasKey .Values.agent.log "whitelist" }}
+{{- if hasKey .Values.agent.log.whitelist "agentLog" }}
+            - --log-whitelist-agent-log={{ .Values.agent.log.whitelist.agentLog }}
+{{- end }}
+{{- if hasKey .Values.agent.log.whitelist "component" }}
+            - --log-whitelist-component={{ .Values.agent.log.whitelist.component }}
+{{- end }}
+{{- if hasKey .Values.agent.log.whitelist "cloudPlatform" }}
+            - --log-whitelist-cloud-platform={{ .Values.agent.log.whitelist.cloudPlatform }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
           # TODO: liveness probe
           env:
             - name: "FLOWMILL_DISABLE_HTTP_METRICS"

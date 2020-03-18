@@ -1,3 +1,6 @@
+## [0.8.1741] - 2020-03-17
+    - Release helm charts with `latest-v0.8` tag
+
 ## [0.8.1676] - 2020-03-10
 ### Changed
     - Report process end closer to process exit

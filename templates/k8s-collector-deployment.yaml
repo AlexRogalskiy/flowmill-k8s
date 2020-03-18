@@ -53,10 +53,20 @@ spec:
         args:
           - --config-file
           - /etc/flowmill/config.yaml
-{{- if hasKey .Values.relay "logLevel" }}
+{{- if hasKey .Values.relay "log" }}
+{{- if hasKey .Values.relay.log "level" }}
           - --log-console
-          - --{{ .Values.relay.logLevel }}
-{{- end}}
+          - --{{ .Values.relay.log.level }}
+{{- if hasKey .Values.relay.log "whitelist" }}
+{{- if hasKey .Values.relay.log.whitelist "component" }}
+          - --log-whitelist-component={{ .Values.relay.log.whitelist.component }}
+{{- end }}
+{{- if hasKey .Values.relay.log.whitelist "cloudPlatform" }}
+          - --log-whitelist-cloud-platform={{ .Values.relay.log.whitelist.cloudPlatform }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
         env:
 {{- if hasKey .Values "chamberService" }}
           - name: "CHAMBER_SERVICE_NAME"
@@ -103,10 +113,20 @@ spec:
 {{ toYaml .Values.awsCollector.resources | indent 10 }}
 {{- end }}
         args:
-{{- if hasKey .Values.awsCollector "logLevel" }}
+{{- if hasKey .Values.awsCollector "log" }}
+{{- if hasKey .Values.awsCollector.log "level" }}
           - --log-console
-          - --{{ .Values.awsCollector.logLevel }}
-{{- end}}
+          - --{{ .Values.awsCollector.log.level }}
+{{- if hasKey .Values.awsCollector.log "whitelist" }}
+{{- if hasKey .Values.awsCollector.log.whitelist "component" }}
+          - --log-whitelist-component={{ .Values.awsCollector.log.whitelist.component }}
+{{- end }}
+{{- if hasKey .Values.awsCollector.log.whitelist "cloudPlatform" }}
+          - --log-whitelist-cloud-platform={{ .Values.awsCollector.log.whitelist.cloudPlatform }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
         env:
 {{- if hasKey .Values "chamberService" }}
           - name: "CHAMBER_SERVICE_NAME"
