@@ -1,0 +1,6 @@
+# auth.yaml in static/ subdirectory also should not be committed
+/static
+# vim swap files
+*.sw?
+# git conflict backup
+*.orig
