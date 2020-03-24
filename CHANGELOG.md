@@ -1,3 +1,7 @@
+## [0.8.1778] - 2020-03-24
+### Changed
+    - Multiple enhancements and data quality fixes
+
 ## [0.8.1743] - 2020-03-17
 ### Changed
     - Set imagePullPolicy to Always, so restarts pull the latest image with the configured image tag
