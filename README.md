@@ -1,6 +1,4 @@
 
-# Prerequisites
-
 ## Deploying
 
 Manually, using Helm:

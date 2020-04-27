@@ -1,3 +1,14 @@
+## [0.8.2082] - 2020-04-27
+### Changed
+    - Multiple enhancements and data quality fixes
+    - Improve authentication retry logic
+
+## [0.8.1989] - 2020-04-13
+### Changed
+    - Better authentication handling for aws collector
+    - Support for recent >5.0.0 kernels
+    - Fixes for data quality issues
+
 ## [0.8.1778] - 2020-03-24
 ### Changed
     - Multiple enhancements and data quality fixes
