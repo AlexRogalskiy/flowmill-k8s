@@ -1,10 +1,4 @@
 
-# Prerequisites
-
-Install kernel headers on all nodes in your cluster:
-  * `sudo apt-get install --yes "linux-headers-$(uname -r)"`  # For Debian, Ubuntu
-  * `sudo yum install -y "kernel-devel-$(uname -r)"`  # For RHEL, CentOS, Amazon Linux
-
 ## Deploying
 
 Manually, using Helm:
