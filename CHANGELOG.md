@@ -1,3 +1,8 @@
+## [0.8.2167] - 2020-05-05
+### Changed
+    - Minor enhancements
+    - eBPF stylistic fixups
+
 ## [0.8.2082] - 2020-04-27
 ### Changed
     - Multiple enhancements and data quality fixes
