@@ -60,7 +60,7 @@ spec:
             - --bpf-dump-file={{ .Values.agent.bpfDumpFile }}
 {{- end }}
 {{- if not (default false .Values.agent.collectNomadMetadata) }}
-            - disable-nomad-metadata
+            - --disable-nomad-metadata
 {{- end }}
 {{- if .Values.agent.cpuMemIo }}
             - --enable-cpu-mem-io
