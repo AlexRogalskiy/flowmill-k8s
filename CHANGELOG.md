@@ -1,3 +1,10 @@
+## [0.8.2278] - 2020-05-12
+### Changed
+    - Implemented CPU/Mem/IO collection
+    - Add nomad metadata collection (disabled by default)
+    - Add ability to print bpf logs to a file
+    - Fix for heartbeat connection
+
 ## [0.8.2167] - 2020-05-05
 ### Changed
     - Minor enhancements

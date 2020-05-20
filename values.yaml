@@ -22,6 +22,20 @@ agent:
   # uncomment the line below to disable automatic kernel headers fetching
   #installKernelHeaders: false
 
+  # uncomment the `cpuMemIo` section to enable CPU/Mem/IO data collection
+  #cpuMemIo:
+  #  # minimum micro batch size for CPU/Mem/IO polling (comment for default value)
+  #  #minBatch: 1
+  #  # maximum micro batch size for CPU/Mem/IO polling (comment for default value)
+  #  #maxBatch: 5
+  #  # maximum time budget (us) per CPU/Mem/IO micro batch (comment for default value)
+  #  #pollBudgetUs: 5
+  #  # poll count between CPU/Mem/IO micro batches (comment for default value)
+  #  #cooldown: 10
+
+  # uncomment to enable enrichment using Nomad metadata (https://www.nomadproject.io/)
+  #collectNomadMetadata: true
+
   #log:
   #  # uncomment the line below to change the minimum log level
   #  # possible values: { error | warn | info | debug | trace }

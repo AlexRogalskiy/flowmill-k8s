@@ -28,6 +28,7 @@ spec:
       annotations:
         # This is here to allow us to do "zero-downtime" updates without an image change.
         rollingUpdateVersion: "1"
+        charts.flowmill.com/version: {{ .Chart.Version }}
       labels:
         app.kubernetes.io/name: {{ include "flowmill-k8s-collector.fullname" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}

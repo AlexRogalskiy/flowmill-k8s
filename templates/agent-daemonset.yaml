@@ -40,6 +40,7 @@ spec:
     metadata:
       annotations:
         release_number: "3"
+        charts.flowmill.com/version: {{ .Chart.Version }}
       labels:
         app.kubernetes.io/name: {{ include "flowmill-agent-k8s.fullname" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -55,6 +56,31 @@ spec:
           args:
             - --config-file
             - /etc/flowmill/config.yaml
+{{- if .Values.agent.bpfDumpFile }}
+            - --bpf-dump-file={{ .Values.agent.bpfDumpFile }}
+{{- end }}
+{{- if not (default false .Values.agent.collectNomadMetadata) }}
+            - --disable-nomad-metadata
+{{- end }}
+{{- if .Values.agent.cpuMemIo }}
+            - --enable-cpu-mem-io
+{{- if .Values.agent.cpuMemIo.minBatch }}
+            - --cpu-mem-io-min-batch
+            - {{quote .Values.agent.cpuMemIo.minBatch}}
+{{- end }}
+{{- if .Values.agent.cpuMemIo.maxBatch }}
+            - --cpu-mem-io-max-batch
+            - {{quote .Values.agent.cpuMemIo.maxBatch}}
+{{- end }}
+{{- if .Values.agent.cpuMemIo.pollBudgetUs }}
+            - --cpu-mem-io-poll-budget-us
+            - {{quote .Values.agent.cpuMemIo.pollBudgetUs}}
+{{- end }}
+{{- if .Values.agent.cpuMemIo.cooldown }}
+            - --cpu-mem-io-cooldown
+            - {{quote .Values.agent.cpuMemIo.cooldown}}
+{{- end }}
+{{- end }}
 {{- if hasKey .Values.agent "log" }}
 {{- if hasKey .Values.agent.log "level" }}
             - --log-console
