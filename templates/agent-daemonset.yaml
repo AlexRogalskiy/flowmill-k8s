@@ -62,6 +62,9 @@ spec:
 {{- if not (default false .Values.agent.collectNomadMetadata) }}
             - --disable-nomad-metadata
 {{- end }}
+{{- if .Values.agent.userlandTcp }}
+            - --enable-userland-tcp
+{{- end }}
 {{- if .Values.agent.cpuMemIo }}
             - --enable-cpu-mem-io
 {{- if .Values.agent.cpuMemIo.minBatch }}
@@ -168,6 +171,9 @@ spec:
             readOnly: true
       hostNetwork: true
       hostPID: true
+{{- if .Values.rbac.create }}
+      serviceAccountName: {{ include "flowmill-agent-k8s.fullname" . }}
+{{- end }}
       volumes:
       - name: {{ include "flowmill-agent-k8s.fullname" . }}-config
         projected:

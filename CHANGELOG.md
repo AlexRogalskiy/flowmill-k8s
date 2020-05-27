@@ -1,3 +1,9 @@
+## [0.8.2397] - 2020-05-27
+### Changed
+    - Improvements to CPU/Mem/IO collection
+    - Improvements to nomad metadata collection
+    - Minor stability enhancements
+
 ## [0.8.2278] - 2020-05-12
 ### Changed
     - Implemented CPU/Mem/IO collection
