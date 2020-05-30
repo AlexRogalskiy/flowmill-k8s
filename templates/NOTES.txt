@@ -1,0 +1,2 @@
+OK, the Flowmill agent has been deployed to your cluster
+in the {{ .Release.Namespace }} namespace.
