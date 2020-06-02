@@ -1,3 +1,8 @@
+## [0.8.2441] - 2020-06-02
+### Changed
+    - Fix `yumdownloader` kernel headers issue
+    - Fix CPU/mem/io sample irregularity
+
 ## [0.8.2397] - 2020-05-27
 ### Changed
     - Improvements to CPU/Mem/IO collection

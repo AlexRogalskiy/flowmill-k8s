@@ -55,10 +55,13 @@ spec:
           - --config-file
           - /etc/flowmill/config.yaml
 {{- if hasKey .Values.relay "log" }}
-{{- if hasKey .Values.relay.log "level" }}
           - --log-console
+{{- if hasKey .Values.relay.log "level" }}
           - --{{ .Values.relay.log.level }}
 {{- if hasKey .Values.relay.log "whitelist" }}
+{{- if hasKey .Values.relay.log.whitelist "channel" }}
+          - --log-whitelist-channel={{ .Values.relay.log.whitelist.channel }}
+{{- end }}
 {{- if hasKey .Values.relay.log.whitelist "component" }}
           - --log-whitelist-component={{ .Values.relay.log.whitelist.component }}
 {{- end }}
@@ -115,10 +118,13 @@ spec:
 {{- end }}
         args:
 {{- if hasKey .Values.awsCollector "log" }}
-{{- if hasKey .Values.awsCollector.log "level" }}
           - --log-console
+{{- if hasKey .Values.awsCollector.log "level" }}
           - --{{ .Values.awsCollector.log.level }}
 {{- if hasKey .Values.awsCollector.log "whitelist" }}
+{{- if hasKey .Values.awsCollector.log.whitelist "channel" }}
+          - --log-whitelist-channel={{ .Values.awsCollector.log.whitelist.channel }}
+{{- end }}
 {{- if hasKey .Values.awsCollector.log.whitelist "component" }}
           - --log-whitelist-component={{ .Values.awsCollector.log.whitelist.component }}
 {{- end }}

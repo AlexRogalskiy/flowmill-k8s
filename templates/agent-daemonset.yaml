@@ -85,12 +85,15 @@ spec:
 {{- end }}
 {{- end }}
 {{- if hasKey .Values.agent "log" }}
-{{- if hasKey .Values.agent.log "level" }}
             - --log-console
+{{- if hasKey .Values.agent.log "level" }}
             - --{{ .Values.agent.log.level }}
 {{- if hasKey .Values.agent.log "whitelist" }}
 {{- if hasKey .Values.agent.log.whitelist "agentLog" }}
             - --log-whitelist-agent-log={{ .Values.agent.log.whitelist.agentLog }}
+{{- end }}
+{{- if hasKey .Values.agent.log.whitelist "channel" }}
+          - --log-whitelist-channel={{ .Values.agent.log.whitelist.channel }}
 {{- end }}
 {{- if hasKey .Values.agent.log.whitelist "component" }}
             - --log-whitelist-component={{ .Values.agent.log.whitelist.component }}

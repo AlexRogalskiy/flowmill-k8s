@@ -5,11 +5,17 @@
 
 ### Using Helm
 
-* Clone this repo
+* Add Flowmill helm repo
 
-* Download a customized version of flowmill.yaml from app.flowmill.com or manually edit the flowmill.yaml file
+```console
+helm repo add flowmill https://charts.flowmill.com
 
-### Helm 3
+helm repo update
+```
+
+* Download a customized version of flowmill.yaml from app.flowmill.com
+
+#### Helm 3
 
 * Create a namespace for the flowmill agent if using Helm 3
 
@@ -20,15 +26,15 @@ kubectl create namespace flowmill
 * Install the agent
 
 ```console
-helm install --namespace flowmill --values flowmill.yaml flowmill ./
+helm install --namespace flowmill --values flowmill.yaml flowmill flowmill/flowmill-k8s
 ```
 
-### Helm 2
+#### Helm 2
 
 * Install the agent
 
 ```console
-helm install ./ --name flowmill-k8s --namespace flowmill --values flowmill.yaml
+helm install flowmill/flowmill-k8s --name flowmill-k8s --namespace flowmill --values flowmill.yaml
 ```
 
 ### Using [Ship](https://github.com/replicatedhq/ship)
@@ -41,13 +47,16 @@ ship init github.com/Flowmill/flowmill-k8s
 
 ## Upgrading
 
-Manually, using Helm:
+### Using Helm:
 
 ```console
-helm upgrade flowmill-k8s ./ -f flowmill.yaml --namespace flowmill
+# Get newest version of the chart
+helm repo update
+
+helm upgrade flowmill-k8s flowmill/flowmill-k8s -f flowmill.yaml --namespace flowmill
 ```
 
-Using Ship:
+### Using Ship:
 
 ```console
 ship watch && ship update
