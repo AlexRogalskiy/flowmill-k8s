@@ -1,0 +1,6 @@
+apiVersion: v1
+appVersion: "0.7"
+description: Deploys the Flowmill agent in Kubernetes as a DaemonSet
+name: flowmill-k8s
+version: 0.8.2441
+icon: https://www.flowmill.com/apple-touch-icon-152x152.png
