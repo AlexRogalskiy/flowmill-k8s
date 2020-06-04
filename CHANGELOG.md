@@ -1,3 +1,7 @@
+## [0.8.2474] - 2020-06-04
+### Changed
+    - Fix issue downloading kernel headers on CentOS7
+
 ## [0.8.2441] - 2020-06-02
 ### Changed
     - Fix `yumdownloader` kernel headers issue
