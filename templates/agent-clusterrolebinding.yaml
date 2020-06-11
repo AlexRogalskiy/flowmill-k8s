@@ -1,0 +1,19 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: {{ include "flowmill-agent-k8s.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "flowmill-agent-k8s.fullname" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "flowmill-agent-k8s.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "flowmill-agent-k8s.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end -}}
