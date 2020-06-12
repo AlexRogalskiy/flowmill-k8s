@@ -1,3 +1,7 @@
+## [0.8.2533] - 2020-06-10
+### Changed
+    - Minor enhancements
+
 ## [0.8.2474] - 2020-06-04
 ### Changed
     - Fix issue downloading kernel headers on CentOS7
