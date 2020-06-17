@@ -108,6 +108,10 @@ spec:
           env:
             - name: "FLOWMILL_DISABLE_HTTP_METRICS"
               value: {{ quote (default false .Values.agent.disableHttpMetrics) }}
+{{- if (default false .Values.runUnderGDB) }}
+            - name: "FLOWMILL_RUN_UNDER_GDB"
+              value: "gdb"
+{{- end }}
 {{- if hasKey .Values "chamberService" }}
             - name: "CHAMBER_SERVICE_NAME"
               value: {{ quote .Values.chamberService }}
