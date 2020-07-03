@@ -1,3 +1,7 @@
+## [0.8.2617] - 2020-06-23
+### Changed
+    - Minor enhancements to cpu/mem/io metric collection
+
 ## [0.8.2576] - 2020-06-17
 ### Changed
     - Improve cpu/mem/io metric enrichment
