@@ -1,3 +1,8 @@
+## [0.8.2716] - 2020-07-06
+### Changed
+    - Increase max DNS packet size to 512 bytes
+    - Fix issue with CPU/mem/io enrichment
+
 ## [0.8.2617] - 2020-06-23
 ### Changed
     - Minor enhancements to cpu/mem/io metric collection

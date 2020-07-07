@@ -22,8 +22,9 @@ agent:
   # uncomment the line below to disable automatic kernel headers fetching
   #installKernelHeaders: false
 
-  # uncomment the `cpuMemIo` section to enable CPU/Mem/IO data collection
-  #cpuMemIo:
+  cpuMemIo:
+    # Set this to false to disable CPU/Mem/IO collection
+    enabled: true
   #  # minimum micro batch size for CPU/Mem/IO polling (comment for default value)
   #  #minBatch: 1
   #  # maximum micro batch size for CPU/Mem/IO polling (comment for default value)

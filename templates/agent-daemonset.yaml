@@ -65,7 +65,7 @@ spec:
 {{- if .Values.agent.userlandTcp }}
             - --enable-userland-tcp
 {{- end }}
-{{- if .Values.agent.cpuMemIo }}
+{{- if .Values.agent.cpuMemIo.enabled }}
             - --enable-cpu-mem-io
 {{- if .Values.agent.cpuMemIo.minBatch }}
             - --cpu-mem-io-min-batch
