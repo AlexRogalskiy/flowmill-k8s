@@ -34,6 +34,9 @@ agent:
   #  # poll count between CPU/Mem/IO micro batches (comment for default value)
   #  #cooldown: 3
 
+  # assumes docker is being used for kubernetes containers
+  useDockerMetadata: true
+
   # uncomment to enable enrichment using Nomad metadata (https://www.nomadproject.io/)
   #collectNomadMetadata: true
 

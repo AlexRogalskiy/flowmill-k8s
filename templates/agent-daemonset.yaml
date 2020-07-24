@@ -59,6 +59,9 @@ spec:
 {{- if .Values.agent.bpfDumpFile }}
             - --bpf-dump-file={{ .Values.agent.bpfDumpFile }}
 {{- end }}
+{{- if (default false .Values.agent.useDockerMetadata) }}
+            - --force-docker-metadata
+{{- end }}
 {{- if not (default false .Values.agent.collectNomadMetadata) }}
             - --disable-nomad-metadata
 {{- end }}
@@ -147,6 +150,10 @@ spec:
               value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
             - name: "FLOWMILL_INTAKE_PORT"
               value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- if .Values.agent.exportBpfSrcFile }}
+            - name: "FLOWMILL_EXPORT_BPF_SRC_FILE"
+              value: {{ quote .Values.agent.exportBpfSrcFile }}
+{{- end }}
 {{- if hasKey .Values.agent "resources" }}
           resources:
 {{ toYaml .Values.agent.resources | indent 12 }}
@@ -176,6 +183,11 @@ spec:
           - mountPath: /hostfs/sys/fs/cgroup
             name: hostfs-sys-fs-cgroup
             readOnly: true
+{{- if (default false .Values.agent.useDockerMetadata) }}
+          - mountPath: /var/run/docker.sock
+            name: docker-sock
+            readOnly: false
+{{- end }}
       hostNetwork: true
       hostPID: true
 {{- if .Values.rbac.create }}
@@ -208,6 +220,12 @@ spec:
         hostPath:
           path: /var/cache
           type: DirectoryOrCreate
+{{- if (default false .Values.agent.useDockerMetadata) }}
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+{{- end }}
 {{- end }}
 {{- end }}
       - name: hostfs-sys-fs-cgroup

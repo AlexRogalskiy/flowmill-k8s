@@ -1,3 +1,9 @@
+## [0.8.2824] - 2020-07-24
+### Changed
+    - CPU/Mem/IO now collects podname for processes running in k8s
+    - Agent collects k8s metadata from the docker engine
+    - Enable container metadata on k8s by default
+
 ## [0.8.2716] - 2020-07-06
 ### Changed
     - Increase max DNS packet size to 512 bytes
