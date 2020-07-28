@@ -1,3 +1,7 @@
+## [0.8.2859] - 2020-07-28
+### Changed
+    - CPU/Mem/IO now collects the hard/soft cpu limits from the kernel
+
 ## [0.8.2824] - 2020-07-24
 ### Changed
     - CPU/Mem/IO now collects podname for processes running in k8s
