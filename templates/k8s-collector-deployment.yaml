@@ -4,7 +4,7 @@
 #    the cluster; sets up watches to be notified of subsequent changes to pods, services
 #    and other resources.
 # 2) k8s-relay: relays the information collected by k8s-watcher to the Flowmill service.
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "flowmill-k8s-collector.fullname" . }}
