@@ -36,6 +36,14 @@ agent:
 
   # assumes docker is being used for kubernetes containers
   useDockerMetadata: true
+  # Set `dumpDockerMetadata` to dump the container metadata retrieved from
+  # docker engine into the agent's pod under `/var/run/flowmill/dump`.
+  #
+  # The metadata can be retrieved using the command:
+  # ```
+  # kubectl -n flowmill cp AGENT_POD_NAME:/var/run/flowmill/dump DEST_DIR
+  # ```
+  #dumpDockerMetadata: true
 
   # uncomment to enable enrichment using Nomad metadata (https://www.nomadproject.io/)
   #collectNomadMetadata: true

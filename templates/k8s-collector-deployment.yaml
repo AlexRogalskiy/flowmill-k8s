@@ -1,4 +1,4 @@
-{{- if (hasKey .Values "relay") and (hasKey .Values "watcher") }}
+{{- if and (hasKey .Values "relay") (hasKey .Values "watcher") }}
 # The Flowmill k8s collector consists of two services:
 # 1) k8s-watcher: talks to the Kubernetes API server to determine the current state of
 #    the cluster; sets up watches to be notified of subsequent changes to pods, services

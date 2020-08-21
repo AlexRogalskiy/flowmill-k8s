@@ -1,3 +1,7 @@
+## [0.8.3031] - 2020-08-21
+### Changed
+    - Helm chart update, deprecate extensions/v1beta1
+
 ## [0.8.2859] - 2020-07-28
 ### Changed
     - CPU/Mem/IO now collects the hard/soft cpu limits from the kernel
