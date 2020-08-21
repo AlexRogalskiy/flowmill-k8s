@@ -1,9 +1,5 @@
 ## [0.8.3031] - 2020-08-21
 ### Changed
-    - Minor helm chart fix
-
-## [0.8.3028] - 2020-08-21
-### Changed
     - Helm chart update, deprecate extensions/v1beta1
 
 ## [0.8.2859] - 2020-07-28
