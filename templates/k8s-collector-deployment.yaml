@@ -1,0 +1,187 @@
+{{- if and (hasKey .Values "relay") (hasKey .Values "watcher") }}
+# The Flowmill k8s collector consists of two services:
+# 1) k8s-watcher: talks to the Kubernetes API server to determine the current state of
+#    the cluster; sets up watches to be notified of subsequent changes to pods, services
+#    and other resources.
+# 2) k8s-relay: relays the information collected by k8s-watcher to the Flowmill service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "flowmill-k8s-collector.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "flowmill-k8s-collector.fullname" . }}
+    helm.sh/chart: {{ include "flowmill-k8s.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "flowmill-k8s-collector.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        # This is here to allow us to do "zero-downtime" updates without an image change.
+        rollingUpdateVersion: "1"
+        charts.flowmill.com/version: {{ .Chart.Version }}
+      labels:
+        app.kubernetes.io/name: {{ include "flowmill-k8s-collector.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: "{{ .Values.watcher.repository }}:{{ default .Values.flowmill.version .Values.watcher.tag }}"
+        imagePullPolicy: {{ .Values.watcher.pullPolicy }}
+        name: flowmill-k8s-watcher
+{{- if hasKey .Values.watcher "resources" }}
+        resources:
+{{- end }}
+      # k8s-relay, which is a service that the k8s collector talks to.
+      # Currently not configurable, has to be reachable on localhost:8172, so must
+      # share a pod with the k8s collector above.  Talks in turn to flowmill-server
+      # on our end.
+      - image: "{{ .Values.relay.repository }}:{{ default .Values.flowmill.version .Values.relay.tag }}"
+        imagePullPolicy: {{ .Values.relay.pullPolicy }}
+        name: flowmill-k8s-relay
+{{- if hasKey .Values.relay "resources" }}
+        resources:
+{{ toYaml .Values.relay.resources | indent 12 }}
+{{- end }}
+        args:
+          - --config-file
+          - /etc/flowmill/config.yaml
+{{- if hasKey .Values.relay "log" }}
+          - --log-console
+{{- if hasKey .Values.relay.log "level" }}
+          - --{{ .Values.relay.log.level }}
+{{- if hasKey .Values.relay.log "whitelist" }}
+{{- if hasKey .Values.relay.log.whitelist "channel" }}
+          - --log-whitelist-channel={{ .Values.relay.log.whitelist.channel }}
+{{- end }}
+{{- if hasKey .Values.relay.log.whitelist "component" }}
+          - --log-whitelist-component={{ .Values.relay.log.whitelist.component }}
+{{- end }}
+{{- if hasKey .Values.relay.log.whitelist "cloudPlatform" }}
+          - --log-whitelist-cloud-platform={{ .Values.relay.log.whitelist.cloudPlatform }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+        env:
+{{- if hasKey .Values "chamberService" }}
+          - name: "CHAMBER_SERVICE_NAME"
+            value: {{ quote .Values.chamberService }}
+{{- else }}
+          - name: "FLOWMILL_AUTH_KEY_ID"
+            valueFrom:
+              secretKeyRef:
+                key: flowmill_agent_key_id
+              {{- if .Values.flowmill.agentExistingSecret }}
+                name: {{ .Values.flowmill.agentExistingSecret }}
+              {{- else }}
+                name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+              {{- end }}
+          - name: "FLOWMILL_AUTH_SECRET"
+            valueFrom:
+              secretKeyRef:
+                key: flowmill_agent_secret
+              {{- if .Values.flowmill.agentExistingSecret }}
+                name: {{ .Values.flowmill.agentExistingSecret }}
+              {{- else }}
+                name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+              {{- end }}
+{{- end }}
+{{- if hasKey .Values.flowmill.services "host" }}
+          - name: "FLOWMILL_AUTHZ_SERVER"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+{{- end}}
+          - name: "FLOWMILL_INTAKE_NAME"
+            value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+          - name: "FLOWMILL_INTAKE_HOST"
+            value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+          - name: "FLOWMILL_INTAKE_PORT"
+            value: "{{ default 443 .Values.flowmill.intake.port }}"
+        volumeMounts:
+        - mountPath: /etc/flowmill
+          name: flowmill-k8s-relay-config
+{{- if hasKey .Values "awsCollector" }}
+      - image: "{{ .Values.awsCollector.repository }}:{{ default .Values.flowmill.version .Values.awsCollector.tag }}"
+        imagePullPolicy: {{ .Values.awsCollector.pullPolicy }}
+        name: flowmill-aws-collector
+{{- if hasKey .Values.awsCollector "resources" }}
+        resources:
+{{ toYaml .Values.awsCollector.resources | indent 10 }}
+{{- end }}
+        args:
+{{- if hasKey .Values.awsCollector "log" }}
+          - --log-console
+{{- if hasKey .Values.awsCollector.log "level" }}
+          - --{{ .Values.awsCollector.log.level }}
+{{- if hasKey .Values.awsCollector.log "whitelist" }}
+{{- if hasKey .Values.awsCollector.log.whitelist "channel" }}
+          - --log-whitelist-channel={{ .Values.awsCollector.log.whitelist.channel }}
+{{- end }}
+{{- if hasKey .Values.awsCollector.log.whitelist "component" }}
+          - --log-whitelist-component={{ .Values.awsCollector.log.whitelist.component }}
+{{- end }}
+{{- if hasKey .Values.awsCollector.log.whitelist "cloudPlatform" }}
+          - --log-whitelist-cloud-platform={{ .Values.awsCollector.log.whitelist.cloudPlatform }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+        env:
+{{- if hasKey .Values "chamberService" }}
+          - name: "CHAMBER_SERVICE_NAME"
+            value: {{ quote .Values.chamberService }}
+{{- else }}
+          - name: "FLOWMILL_AUTH_KEY_ID"
+            valueFrom:
+              secretKeyRef:
+                key: flowmill_agent_key_id
+              {{- if .Values.flowmill.agentExistingSecret }}
+                name: {{ .Values.flowmill.agentExistingSecret }}
+              {{- else }}
+                name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+              {{- end }}
+          - name: "FLOWMILL_AUTH_SECRET"
+            valueFrom:
+              secretKeyRef:
+                key: flowmill_agent_secret
+              {{- if .Values.flowmill.agentExistingSecret }}
+                name: {{ .Values.flowmill.agentExistingSecret }}
+              {{- else }}
+                name: {{ template "flowmill-k8s.fullname" . }}-agent-key
+              {{- end }}
+{{- end }}
+{{- if hasKey .Values.flowmill.services "host" }}
+          - name: "FLOWMILL_AUTHZ_SERVER"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+{{- end}}
+          - name: "FLOWMILL_INTAKE_NAME"
+            value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+          - name: "FLOWMILL_INTAKE_HOST"
+            value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+          - name: "FLOWMILL_INTAKE_PORT"
+            value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- end }}
+      volumes:
+      - name: flowmill-k8s-relay-config
+        projected:
+          sources:
+            - configMap:
+                name: {{ include "flowmill-k8s.fullname" . }}-config
+                items:
+                - key: config.yaml
+                  path: config.yaml
+      securityContext: {}
+      {{- if .Values.rbac.create }}
+      serviceAccount: {{ include "flowmill-k8s-collector.fullname" . }}
+      serviceAccountName: {{ include "flowmill-k8s-collector.fullname" . }}
+      {{- end }}
+      terminationGracePeriodSeconds: 30
+{{- end }}
