@@ -1,3 +1,9 @@
+## [0.8.3033] - 2020-08-24
+### Changed
+    - Fix cpu hard limits collection
+    - Improvements to tcp data collection
+    - Improvements to container metadata collection
+
 ## [0.8.3031] - 2020-08-21
 ### Changed
     - Helm chart update, deprecate extensions/v1beta1
