@@ -39,6 +39,7 @@ spec:
         name: flowmill-k8s-watcher
 {{- if hasKey .Values.watcher "resources" }}
         resources:
+{{ toYaml .Values.watcher.resources | indent 10 }}
 {{- end }}
       # k8s-relay, which is a service that the k8s collector talks to.
       # Currently not configurable, has to be reachable on localhost:8172, so must
@@ -49,7 +50,7 @@ spec:
         name: flowmill-k8s-relay
 {{- if hasKey .Values.relay "resources" }}
         resources:
-{{ toYaml .Values.relay.resources | indent 12 }}
+{{ toYaml .Values.relay.resources | indent 10 }}
 {{- end }}
         args:
           - --config-file
