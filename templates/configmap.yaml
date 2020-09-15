@@ -1,0 +1,12 @@
+# This configmap includes auth.yaml (which is used for both the agent and the k8s-relay
+# containers) and config.yaml (currently only used by the agent).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "flowmill-k8s.fullname" . }}-config
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  config.yaml: |
+    labels:
+      environment: {{ .Values.flowmill.clusterName }}
+
