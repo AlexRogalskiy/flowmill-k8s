@@ -73,6 +73,10 @@ spec:
 {{- end }}
 {{- end }}
         env:
+{{- if (default false .Values.relay.runUnderGDB) }}
+          - name: "FLOWMILL_RUN_UNDER_GDB"
+            value: "gdb"
+{{- end }}
 {{- if hasKey .Values "chamberService" }}
           - name: "CHAMBER_SERVICE_NAME"
             value: {{ quote .Values.chamberService }}
@@ -136,6 +140,10 @@ spec:
 {{- end }}
 {{- end }}
         env:
+{{- if (default false .Values.awsCollector.runUnderGDB) }}
+          - name: "FLOWMILL_RUN_UNDER_GDB"
+            value: "gdb"
+{{- end }}
 {{- if hasKey .Values "chamberService" }}
           - name: "CHAMBER_SERVICE_NAME"
             value: {{ quote .Values.chamberService }}

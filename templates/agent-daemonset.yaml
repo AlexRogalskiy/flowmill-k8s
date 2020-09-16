@@ -71,7 +71,7 @@ spec:
 {{- if .Values.agent.userlandTcp }}
             - --enable-userland-tcp
 {{- end }}
-{{- if .Values.agent.cpuMemIo.enabled }}
+{{- if (default false .Values.agent.cpuMemIo.enabled) }}
             - --enable-cpu-mem-io
 {{- if .Values.agent.cpuMemIo.minBatch }}
             - --cpu-mem-io-min-batch
@@ -114,7 +114,7 @@ spec:
           env:
             - name: "FLOWMILL_DISABLE_HTTP_METRICS"
               value: {{ quote (default false .Values.agent.disableHttpMetrics) }}
-{{- if (default false .Values.runUnderGDB) }}
+{{- if (default false .Values.agent.runUnderGDB) }}
             - name: "FLOWMILL_RUN_UNDER_GDB"
               value: "gdb"
 {{- end }}

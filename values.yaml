@@ -24,7 +24,7 @@ agent:
 
   cpuMemIo:
     # Set this to false to disable CPU/Mem/IO collection
-    enabled: true
+    enabled: false
   #  # minimum micro batch size for CPU/Mem/IO polling (comment for default value)
   #  #minBatch: 1
   #  # maximum micro batch size for CPU/Mem/IO polling (comment for default value)

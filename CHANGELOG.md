@@ -1,3 +1,9 @@
+## [0.8.3190] - 2020-09-15
+### Changed
+    - Improve error handling on disconnects
+    - Improve safeguards to prevent resource leakage
+    - Agents now collect number of cpu cores
+
 ## [0.8.3033] - 2020-08-24
 ### Changed
     - Fix cpu hard limits collection
