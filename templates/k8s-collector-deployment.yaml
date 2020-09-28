@@ -73,6 +73,10 @@ spec:
 {{- end }}
 {{- end }}
         env:
+{{- if .Values.flowmill.debug }}
+          - name: "FLOWMILL_DEBUG_MODE"
+            value: "true"
+{{- end }}
 {{- if (default false .Values.relay.runUnderGDB) }}
           - name: "FLOWMILL_RUN_UNDER_GDB"
             value: "gdb"
@@ -110,6 +114,20 @@ spec:
             value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_PORT"
             value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- if .Values.flowmill.proxy }}
+{{- if hasKey .Values.flowmill.proxy "host" }}
+          - name: "FLOWMILL_PROXY_HOST"
+            value: {{.Values.flowmill.proxy.host | quote}}
+{{- end }}
+{{- if hasKey .Values.flowmill.proxy "port" }}
+          - name: "FLOWMILL_PROXY_PORT"
+            value: {{.Values.flowmill.proxy.port | quote}}
+{{- end }}
+{{- if hasKey .Values.flowmill.proxy "basic_auth" }}
+          - name: "FLOWMILL_PROXY_BASIC_AUTH"
+            value: {{.Values.flowmill.proxy.basic_auth | quote}}
+{{- end }}
+{{- end }}
         volumeMounts:
         - mountPath: /etc/flowmill
           name: flowmill-k8s-relay-config
@@ -140,6 +158,10 @@ spec:
 {{- end }}
 {{- end }}
         env:
+{{- if .Values.flowmill.debug }}
+          - name: "FLOWMILL_DEBUG_MODE"
+            value: "true"
+{{- end }}
 {{- if (default false .Values.awsCollector.runUnderGDB) }}
           - name: "FLOWMILL_RUN_UNDER_GDB"
             value: "gdb"
@@ -177,6 +199,20 @@ spec:
             value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_PORT"
             value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- end }}
+{{- if .Values.flowmill.proxy }}
+{{- if hasKey .Values.flowmill.proxy "host" }}
+          - name: "FLOWMILL_PROXY_HOST"
+            value: {{.Values.flowmill.proxy.host | quote}}
+{{- end }}
+{{- if hasKey .Values.flowmill.proxy "port" }}
+          - name: "FLOWMILL_PROXY_PORT"
+            value: {{.Values.flowmill.proxy.port | quote}}
+{{- end }}
+{{- if hasKey .Values.flowmill.proxy "basic_auth" }}
+          - name: "FLOWMILL_PROXY_BASIC_AUTH"
+            value: {{.Values.flowmill.proxy.basic_auth | quote}}
+{{- end }}
 {{- end }}
       volumes:
       - name: flowmill-k8s-relay-config

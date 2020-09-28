@@ -1,3 +1,7 @@
+## [0.8.3293] - 2020-09-28
+### Changed
+    - Agents now support HTTP proxies
+
 ## [0.8.3190] - 2020-09-15
 ### Changed
     - Improve error handling on disconnects

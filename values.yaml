@@ -14,6 +14,13 @@ flowmill:
   intake:
     host: intake.flowmill.com
 
+  # uncomment below to use a proxy to connect to Flowmill intake and services
+  # Note: only HTTP proxies are currently supported
+  # Note: don't specify the protocol scheme (e.g.: http://), just the hostname
+  #proxy:
+  #  host: myproxy.com
+  #  port: 3128
+
 # Configuration for Flowmill's kernel collector
 agent:
   repository: docker.io/flowmill/agent

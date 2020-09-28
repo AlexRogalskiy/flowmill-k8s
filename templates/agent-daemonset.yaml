@@ -112,6 +112,10 @@ spec:
 {{- end }}
           # TODO: liveness probe
           env:
+{{- if .Values.flowmill.debug }}
+            - name: "FLOWMILL_DEBUG_MODE"
+              value: "true"
+{{- end }}
             - name: "FLOWMILL_DISABLE_HTTP_METRICS"
               value: {{ quote (default false .Values.agent.disableHttpMetrics) }}
 {{- if (default false .Values.agent.runUnderGDB) }}
@@ -156,6 +160,20 @@ spec:
 {{- if .Values.agent.exportBpfSrcFile }}
             - name: "FLOWMILL_EXPORT_BPF_SRC_FILE"
               value: {{ quote .Values.agent.exportBpfSrcFile }}
+{{- end }}
+{{- if .Values.flowmill.proxy }}
+{{- if hasKey .Values.flowmill.proxy "host" }}
+            - name: "FLOWMILL_PROXY_HOST"
+              value: {{.Values.flowmill.proxy.host | quote}}
+{{- end }}
+{{- if hasKey .Values.flowmill.proxy "port" }}
+            - name: "FLOWMILL_PROXY_PORT"
+              value: {{.Values.flowmill.proxy.port | quote}}
+{{- end }}
+{{- if hasKey .Values.flowmill.proxy "basic_auth" }}
+            - name: "FLOWMILL_PROXY_BASIC_AUTH"
+              value: {{.Values.flowmill.proxy.basic_auth | quote}}
+{{- end }}
 {{- end }}
 {{- if hasKey .Values.agent "resources" }}
           resources:
