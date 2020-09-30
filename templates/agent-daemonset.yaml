@@ -11,15 +11,6 @@
 # If are you unable to install Kernel Headers, we can generate agent
 # images with headers preinstalled but these are then tied to a single
 # kernel version.
-{{- if .Values.agent.kernelHeaderVersion }}
-{{-   if .Values.agent.installKernelHeaders }}
-{{-     fail "Cannot set both kernelHeaderVersion and installKernelHeaders values" }}
-{{-   end }}
-{{-   $validKernelVersions := list "4.15.0-1037-aws" }}
-{{-   if not (has .Values.agent.kernelHeaderVersion $validKernelVersions) }}
-{{-     fail "Unsupported kernelVersion -- please contact Flowmill support for help" }}
-{{-   end }}
-{{- end }}
 
 apiVersion: apps/v1
 kind: DaemonSet
@@ -47,11 +38,7 @@ spec:
     spec:
       containers:
         - name: {{ include "flowmill-agent-k8s.fullname" . }}
-{{- if not .Values.agent.kernelHeaderVersion }}
           image: "{{ .Values.agent.repository }}:{{ default .Values.flowmill.version .Values.agent.tag }}"
-{{- else }}
-          image: "{{ .Values.agent.repository }}:{{ default .Values.flowmill.version .Values.agent.tag }}-{{ .Values.agent.kernelHeaderVersion }}"
-{{- end }}
           imagePullPolicy: {{ .Values.agent.pullPolicy }}
           args:
             - --config-file
@@ -112,9 +99,11 @@ spec:
 {{- end }}
           # TODO: liveness probe
           env:
-{{- if .Values.flowmill.debug }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.enabled) }}
             - name: "FLOWMILL_DEBUG_MODE"
               value: "true"
+{{- end }}
 {{- end }}
             - name: "FLOWMILL_DISABLE_HTTP_METRICS"
               value: {{ quote (default false .Values.agent.disableHttpMetrics) }}
@@ -147,10 +136,10 @@ spec:
 {{- end }}
             - name: "FLOWMILL_KERNEL_HEADERS_AUTO_FETCH"
               value: {{ quote (default true .Values.agent.installKernelHeaders) }}
-{{- if hasKey .Values.flowmill.services "host" }}
             - name: "FLOWMILL_AUTHZ_SERVER"
               value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
-{{- end}}
+            - name: "FLOWMILL_CRASH_COLLECTOR_HOST"
+              value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
             - name: "FLOWMILL_INTAKE_NAME"
               value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
             - name: "FLOWMILL_INTAKE_HOST"
@@ -160,6 +149,12 @@ spec:
 {{- if .Values.agent.exportBpfSrcFile }}
             - name: "FLOWMILL_EXPORT_BPF_SRC_FILE"
               value: {{ quote .Values.agent.exportBpfSrcFile }}
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+            - name: "FLOWMILL_MINIDUMP_DIR"
+              value: "/var/run/flowmill/host/run/flowmill/minidump"
+{{- end }}
 {{- end }}
 {{- if .Values.flowmill.proxy }}
 {{- if hasKey .Values.flowmill.proxy "host" }}
@@ -182,7 +177,6 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-{{- if not .Values.agent.kernelHeaderVersion }}
           - mountPath: /var/run/flowmill/host/usr/src
             name: usr-src
             readOnly: true
@@ -194,9 +188,8 @@ spec:
             name: etc
             readOnly: true
           - mountPath: /var/run/flowmill/host/cache
-            name: cache
+            name: host-var-cache
             readOnly: false
-{{- end }}
 {{- end }}
           - mountPath: /etc/flowmill
             name: {{ include "flowmill-agent-k8s.fullname" . }}-config
@@ -208,6 +201,13 @@ spec:
           - mountPath: /var/run/docker.sock
             name: docker-sock
             readOnly: false
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+          - mountPath: /var/run/flowmill/host/run/flowmill
+            name: host-var-run-flowmill
+            readOnly: false
+{{- end }}
 {{- end }}
       hostNetwork: true
       hostPID: true
@@ -223,7 +223,6 @@ spec:
               items:
               - key: config.yaml
                 path: config.yaml
-{{- if not .Values.agent.kernelHeaderVersion }}
       - name: usr-src
         hostPath:
           path: /usr/src
@@ -237,17 +236,24 @@ spec:
         hostPath:
           path: /etc
           type: Directory
-      - name: cache
+      - name: host-var-cache
         hostPath:
           path: /var/cache
           type: DirectoryOrCreate
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+      - name: host-var-run-flowmill
+        hostPath:
+          path: /var/run/flowmill
+          type: DirectoryOrCreate
+{{- end }}
+{{- end }}
 {{- if (default false .Values.agent.useDockerMetadata) }}
       - name: docker-sock
         hostPath:
           path: /var/run/docker.sock
           type: Socket
-{{- end }}
-{{- end }}
 {{- end }}
       - name: hostfs-sys-fs-cgroup
         hostPath:

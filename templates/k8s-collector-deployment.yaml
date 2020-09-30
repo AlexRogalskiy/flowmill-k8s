@@ -73,9 +73,11 @@ spec:
 {{- end }}
 {{- end }}
         env:
-{{- if .Values.flowmill.debug }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.enabled) }}
           - name: "FLOWMILL_DEBUG_MODE"
             value: "true"
+{{- end }}
 {{- end }}
 {{- if (default false .Values.relay.runUnderGDB) }}
           - name: "FLOWMILL_RUN_UNDER_GDB"
@@ -104,16 +106,22 @@ spec:
                 name: {{ template "flowmill-k8s.fullname" . }}-agent-key
               {{- end }}
 {{- end }}
-{{- if hasKey .Values.flowmill.services "host" }}
           - name: "FLOWMILL_AUTHZ_SERVER"
             value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
-{{- end}}
+          - name: "FLOWMILL_CRASH_COLLECTOR_HOST"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
           - name: "FLOWMILL_INTAKE_NAME"
             value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_HOST"
             value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_PORT"
             value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+          - name: "FLOWMILL_MINIDUMP_DIR"
+            value: "/var/run/flowmill/host/run/flowmill/minidump"
+{{- end }}
+{{- end }}
 {{- if .Values.flowmill.proxy }}
 {{- if hasKey .Values.flowmill.proxy "host" }}
           - name: "FLOWMILL_PROXY_HOST"
@@ -131,6 +139,13 @@ spec:
         volumeMounts:
         - mountPath: /etc/flowmill
           name: flowmill-k8s-relay-config
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+        - mountPath: /var/run/flowmill/host/run/flowmill
+          name: host-var-run-flowmill
+          readOnly: false
+{{- end }}
+{{- end }}
 {{- if hasKey .Values "awsCollector" }}
       - image: "{{ .Values.awsCollector.repository }}:{{ default .Values.flowmill.version .Values.awsCollector.tag }}"
         imagePullPolicy: {{ .Values.awsCollector.pullPolicy }}
@@ -158,9 +173,11 @@ spec:
 {{- end }}
 {{- end }}
         env:
-{{- if .Values.flowmill.debug }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.enabled) }}
           - name: "FLOWMILL_DEBUG_MODE"
             value: "true"
+{{- end }}
 {{- end }}
 {{- if (default false .Values.awsCollector.runUnderGDB) }}
           - name: "FLOWMILL_RUN_UNDER_GDB"
@@ -192,6 +209,8 @@ spec:
 {{- if hasKey .Values.flowmill.services "host" }}
           - name: "FLOWMILL_AUTHZ_SERVER"
             value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+          - name: "FLOWMILL_CRASH_COLLECTOR_HOST"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
 {{- end}}
           - name: "FLOWMILL_INTAKE_NAME"
             value: {{ .Values.flowmill.tenantName }}.{{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
@@ -199,6 +218,12 @@ spec:
             value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_PORT"
             value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+          - name: "FLOWMILL_MINIDUMP_DIR"
+            value: "/var/run/flowmill/host/run/flowmill/minidump"
+{{- end }}
 {{- end }}
 {{- if .Values.flowmill.proxy }}
 {{- if hasKey .Values.flowmill.proxy "host" }}
@@ -214,7 +239,23 @@ spec:
             value: {{.Values.flowmill.proxy.basic_auth | quote}}
 {{- end }}
 {{- end }}
+        volumeMounts:
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+        - mountPath: /var/run/flowmill/host/run/flowmill
+          name: host-var-run-flowmill
+          readOnly: false
+{{- end }}
+{{- end }}
       volumes:
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+      - name: host-var-run-flowmill
+        hostPath:
+          path: /var/run/flowmill
+          type: DirectoryOrCreate
+{{- end }}
+{{- end }}
       - name: flowmill-k8s-relay-config
         projected:
           sources:

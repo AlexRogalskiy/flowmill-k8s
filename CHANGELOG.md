@@ -1,3 +1,8 @@
+## [0.8.3415] - 2020-09-30
+### Changed
+    - added crash reporting to agents
+    - new stability fixes
+
 ## [0.8.3293] - 2020-09-28
 ### Changed
     - Agents now support HTTP proxies
