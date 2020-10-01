@@ -1,6 +1,7 @@
 ## [0.8.3444] - 2020-10-01
 ### Changed
     - Fix for agents not refreshing their auth tokens
+    - Reduce k8s-watcher log verbosity
 
 ## [0.8.3415] - 2020-09-30
 ### Changed
