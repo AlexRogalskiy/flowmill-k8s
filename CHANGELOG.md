@@ -1,3 +1,7 @@
+## [0.8.3444] - 2020-10-01
+### Changed
+    - Fix for agents not refreshing their auth tokens
+
 ## [0.8.3415] - 2020-09-30
 ### Changed
     - added crash reporting to agents
