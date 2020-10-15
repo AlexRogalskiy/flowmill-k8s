@@ -97,8 +97,13 @@ spec:
 {{- end }}
 {{- end }}
 {{- end }}
+{{- if .Values.agent.args }}
+{{ toYaml .Values.agent.args | indent 12 }}
+{{- end }}
           # TODO: liveness probe
           env:
+            - name: "FLOWMILL_CLUSTER_NAME"
+              value: {{ quote .Values.flowmill.clusterName }}
 {{- if hasKey .Values.flowmill "debug" }}
 {{- if (default false .Values.flowmill.debug.enabled) }}
             - name: "FLOWMILL_DEBUG_MODE"
@@ -170,6 +175,9 @@ spec:
               value: {{.Values.flowmill.proxy.basic_auth | quote}}
 {{- end }}
 {{- end }}
+{{- if .Values.agent.env }}
+{{ toYaml .Values.agent.env | indent 12 }}
+{{- end }}
 {{- if hasKey .Values.agent "resources" }}
           resources:
 {{ toYaml .Values.agent.resources | indent 12 }}
@@ -230,7 +238,11 @@ spec:
       - name: lib-modules
         hostPath:
           path: /lib/modules
+{{- if (default false .Values.agent.createLibModules) }}
+          type: DirectoryOrCreate
+{{- else }}
           type: Directory
+{{- end }}
 {{- if (default true .Values.agent.installKernelHeaders) }}
       - name: etc
         hostPath:

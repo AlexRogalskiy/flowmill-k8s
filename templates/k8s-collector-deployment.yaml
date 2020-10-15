@@ -72,7 +72,12 @@ spec:
 {{- end }}
 {{- end }}
 {{- end }}
+{{- if .Values.relay.args }}
+{{ toYaml .Values.relay.args | indent 10 }}
+{{- end }}
         env:
+          - name: "FLOWMILL_CLUSTER_NAME"
+            value: {{ quote .Values.flowmill.clusterName }}
 {{- if hasKey .Values.flowmill "debug" }}
 {{- if (default false .Values.flowmill.debug.enabled) }}
           - name: "FLOWMILL_DEBUG_MODE"
@@ -136,6 +141,9 @@ spec:
             value: {{.Values.flowmill.proxy.basic_auth | quote}}
 {{- end }}
 {{- end }}
+{{- if .Values.relay.env }}
+{{ toYaml .Values.relay.env | indent 10 }}
+{{- end }}
         volumeMounts:
         - mountPath: /etc/flowmill
           name: flowmill-k8s-relay-config
@@ -172,7 +180,12 @@ spec:
 {{- end }}
 {{- end }}
 {{- end }}
+{{- if .Values.awsCollector.args }}
+{{ toYaml .Values.awsCollector.args | indent 10 }}
+{{- end }}
         env:
+          - name: "FLOWMILL_CLUSTER_NAME"
+            value: {{ quote .Values.flowmill.clusterName }}
 {{- if hasKey .Values.flowmill "debug" }}
 {{- if (default false .Values.flowmill.debug.enabled) }}
           - name: "FLOWMILL_DEBUG_MODE"
@@ -238,6 +251,9 @@ spec:
           - name: "FLOWMILL_PROXY_BASIC_AUTH"
             value: {{.Values.flowmill.proxy.basic_auth | quote}}
 {{- end }}
+{{- end }}
+{{- if .Values.awsCollector.env }}
+{{ toYaml .Values.awsCollector.env | indent 10 }}
 {{- end }}
         volumeMounts:
 {{- if hasKey .Values.flowmill "debug" }}
