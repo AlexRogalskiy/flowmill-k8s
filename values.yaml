@@ -23,7 +23,7 @@ flowmill:
 
 # Configuration for Flowmill's kernel collector
 agent:
-  repository: docker.io/flowmill/agent
+  repository: gcr.io/flowmill/agent
   pullPolicy: Always
 
   # uncomment the line below to disable automatic kernel headers fetching
@@ -63,7 +63,7 @@ agent:
 # Configuration for Flowmill's AWS collector.
 # TODO: This section can be removed when deploying in a non-AWS environment.
 awsCollector:
-  repository: docker.io/flowmill/aws-collector
+  repository: gcr.io/flowmill/aws-collector
   pullPolicy: Always
 
   #log:
@@ -73,7 +73,7 @@ awsCollector:
 
 # Configuration for Flowmill's Kubernetes relay.
 relay:
-  repository: docker.io/flowmill/k8s-relay
+  repository: gcr.io/flowmill/k8s-relay
   pullPolicy: Always
 
   #log:
@@ -83,7 +83,7 @@ relay:
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
-  repository: docker.io/flowmill/k8s-watcher
+  repository: gcr.io/flowmill/k8s-watcher
   pullPolicy: Always
 
 nodeSelector: {}
