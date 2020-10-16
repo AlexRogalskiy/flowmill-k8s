@@ -238,11 +238,7 @@ spec:
       - name: lib-modules
         hostPath:
           path: /lib/modules
-{{- if (default false .Values.agent.createLibModules) }}
-          type: DirectoryOrCreate
-{{- else }}
           type: Directory
-{{- end }}
 {{- if (default true .Values.agent.installKernelHeaders) }}
       - name: etc
         hostPath:

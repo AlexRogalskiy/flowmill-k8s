@@ -1,3 +1,9 @@
+## [0.8.3539] - 2020-10-15
+### Changed
+    - Add ability to override the namespace the agent reports
+    - Cleaned up agent logging verbosity
+    - Fix issue with k8s container name enrichment
+
 ## [0.8.3444] - 2020-10-01
 ### Changed
     - Fix for agents not refreshing their auth tokens
