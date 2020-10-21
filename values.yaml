@@ -14,16 +14,17 @@ flowmill:
   intake:
     host: intake.flowmill.com
 
-  # uncomment below to use a proxy to connect to Flowmill intake and services
+  # enable below to use a proxy to connect to Flowmill intake and services
   # NOTE: only HTTP proxies are currently supported
   # NOTE: don't specify the protocol scheme (e.g.: http://), just the hostname/address
-  #proxy:
-  #  host: myproxy.com
-  #  port: 1080
+  proxy:
+    enabled: false
+    host: myproxy.com
+    port: 1080 
 
 # Configuration for Flowmill's kernel collector
 agent:
-  repository: docker.io/flowmill/agent
+  repository: gcr.io/flowmill-gcr/agent
   pullPolicy: Always
 
   # uncomment the line below to disable automatic kernel headers fetching
@@ -63,7 +64,7 @@ agent:
 # Configuration for Flowmill's AWS collector.
 # TODO: This section can be removed when deploying in a non-AWS environment.
 awsCollector:
-  repository: docker.io/flowmill/aws-collector
+  repository: gcr.io/flowmill-gcr/aws-collector
   pullPolicy: Always
 
   #log:
@@ -73,7 +74,7 @@ awsCollector:
 
 # Configuration for Flowmill's Kubernetes relay.
 relay:
-  repository: docker.io/flowmill/k8s-relay
+  repository: gcr.io/flowmill-gcr/k8s-relay
   pullPolicy: Always
 
   #log:
@@ -83,7 +84,7 @@ relay:
 
 # Configuration for Flowmill's Kubernetes watcher.
 watcher:
-  repository: docker.io/flowmill/k8s-watcher
+  repository: gcr.io/flowmill-gcr/k8s-watcher
   pullPolicy: Always
 
 nodeSelector: {}

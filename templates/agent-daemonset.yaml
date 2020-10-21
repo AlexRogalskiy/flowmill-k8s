@@ -161,15 +161,15 @@ spec:
               value: "/var/run/flowmill/host/run/flowmill/minidump"
 {{- end }}
 {{- end }}
-{{- if .Values.flowmill.proxy }}
-{{- if hasKey .Values.flowmill.proxy "host" }}
+{{- if .Values.flowmill.proxy.enabled }}
             - name: "FLOWMILL_PROXY_HOST"
               value: {{.Values.flowmill.proxy.host | quote}}
-{{- end }}
-{{- if hasKey .Values.flowmill.proxy "port" }}
             - name: "FLOWMILL_PROXY_PORT"
               value: {{.Values.flowmill.proxy.port | quote}}
-{{- end }}
+            - name: "HTTP_PROXY"
+              value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
+            - name: "HTTPS_PROXY"
+              value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
 {{- if hasKey .Values.flowmill.proxy "basic_auth" }}
             - name: "FLOWMILL_PROXY_BASIC_AUTH"
               value: {{.Values.flowmill.proxy.basic_auth | quote}}
@@ -238,7 +238,11 @@ spec:
       - name: lib-modules
         hostPath:
           path: /lib/modules
+{{- if (default false .Values.agent.createLibModules) }}
+          type: DirectoryOrCreate
+{{- else }}
           type: Directory
+{{- end }}
 {{- if (default true .Values.agent.installKernelHeaders) }}
       - name: etc
         hostPath:

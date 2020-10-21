@@ -1,3 +1,9 @@
+## [0.8.3603] - 2020-10-21
+### Changed
+    - Helm chart only release
+    - Migrate public images from dockerhub to gcr.io
+    - Fix for kernel header fetching when using a proxy
+
 ## [0.8.3539] - 2020-10-15
 ### Changed
     - Add ability to override the namespace the agent reports
