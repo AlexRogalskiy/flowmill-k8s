@@ -1,3 +1,8 @@
+## [0.8.3631] - 2020-10-28
+### Changed
+    - Helm chart only release
+    - Fix for kernel header fetching when using yum with a proxy
+
 ## [0.8.3628] - 2020-10-28
 ### Changed
     - Helm chart only release

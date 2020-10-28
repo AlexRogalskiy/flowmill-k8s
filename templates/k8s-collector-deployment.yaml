@@ -134,6 +134,10 @@ spec:
             value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
           - name: "HTTPS_PROXY"
             value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
+          - name: "http_proxy"
+            value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
+          - name: "https_proxy"
+            value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
           - name: "FLOWMILL_PROXY_PORT"
             value: {{.Values.flowmill.proxy.port | quote}}
 {{- if hasKey .Values.flowmill.proxy "basic_auth" }}
@@ -243,6 +247,10 @@ spec:
           - name: "HTTP_PROXY"
             value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
           - name: "HTTPS_PROXY"
+            value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
+          - name: "http_proxy"
+            value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
+          - name: "https_proxy"
             value: "http://{{ .Values.flowmill.proxy.host }}:{{ .Values.flowmill.proxy.port }}"
           - name: "FLOWMILL_PROXY_PORT"
             value: {{.Values.flowmill.proxy.port | quote}}
