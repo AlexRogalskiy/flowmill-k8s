@@ -1,3 +1,8 @@
+## [0.8.3628] - 2020-10-28
+### Changed
+    - Helm chart only release
+    - Fix bug where aws collector couldn't be disabled through helm
+
 ## [0.8.3603] - 2020-10-21
 ### Changed
     - Helm chart only release

@@ -231,7 +231,6 @@ spec:
             value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
           - name: "FLOWMILL_INTAKE_PORT"
             value: "{{ default 443 .Values.flowmill.intake.port }}"
-{{- end }}
 {{- if hasKey .Values.flowmill "debug" }}
 {{- if (default false .Values.flowmill.debug.storeMinidump) }}
           - name: "FLOWMILL_MINIDUMP_DIR"
@@ -261,6 +260,7 @@ spec:
         - mountPath: /var/run/flowmill/host/run/flowmill
           name: host-var-run-flowmill
           readOnly: false
+{{- end }}
 {{- end }}
 {{- end }}
       volumes:
