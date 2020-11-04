@@ -1,3 +1,9 @@
+## [0.8.3654] - 2020-11-04
+### Changed
+    - Fix kernel header fetching in the agent when using a proxy
+    - Agents fetch their tenant name automatically
+    - Agents detect service name for systemd services
+
 ## [0.8.3631] - 2020-10-28
 ### Changed
     - Helm chart only release
