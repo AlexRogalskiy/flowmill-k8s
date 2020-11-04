@@ -1,0 +1,118 @@
+# Default values for flowmill-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Check with Flowmill for guidance on expected resource usage, if you would like to set limits.
+
+# Follow the "Settings/Deployment" tab of your UI to get the values below
+flowmill:
+  clusterName: TODO_CHOOSE_YOUR_CLUSTER_NAME_HERE
+  tenantName: YOUR_TENANT_NAME
+  version: latest-v0.8
+  services:
+    host: app.flowmill.com
+  intake:
+    host: intake.flowmill.com
+
+  # enable below to use a proxy to connect to Flowmill intake and services
+  # NOTE: only HTTP proxies are currently supported
+  # NOTE: don't specify the protocol scheme (e.g.: http://), just the hostname/address
+  proxy:
+    enabled: false
+    host: myproxy.com
+    port: 1080 
+
+# Configuration for Flowmill's kernel collector
+agent:
+  repository: gcr.io/flowmill-gcr/agent
+  pullPolicy: Always
+
+  # uncomment the line below to disable automatic kernel headers fetching
+  #installKernelHeaders: false
+
+  cpuMemIo:
+    # Set this to false to disable CPU/Mem/IO collection
+    enabled: false
+  #  # minimum micro batch size for CPU/Mem/IO polling (comment for default value)
+  #  #minBatch: 1
+  #  # maximum micro batch size for CPU/Mem/IO polling (comment for default value)
+  #  #maxBatch: 5
+  #  # maximum time budget (us) per CPU/Mem/IO micro batch (comment for default value)
+  #  #pollBudgetUs: 5
+  #  # poll count between CPU/Mem/IO micro batches (comment for default value)
+  #  #cooldown: 3
+
+  # assumes docker is being used for kubernetes containers
+  useDockerMetadata: true
+  # Set `dumpDockerMetadata` to dump the container metadata retrieved from
+  # docker engine into the agent's pod under `/var/run/flowmill/dump`.
+  #
+  # The metadata can be retrieved using the command:
+  # ```
+  # kubectl -n flowmill cp AGENT_POD_NAME:/var/run/flowmill/dump DEST_DIR
+  # ```
+  #dumpDockerMetadata: true
+
+  # uncomment to enable enrichment using Nomad metadata (https://www.nomadproject.io/)
+  #collectNomadMetadata: true
+
+  #log:
+  #  # uncomment the line below to change the minimum log level
+  #  # possible values: { error | warn | info | debug | trace }
+  #  level: warn
+
+# Configuration for Flowmill's AWS collector.
+# TODO: This section can be removed when deploying in a non-AWS environment.
+awsCollector:
+  repository: gcr.io/flowmill-gcr/aws-collector
+  pullPolicy: Always
+
+  #log:
+  #  # uncomment the line below to change the minimum log level
+  #  # possible values: { error | warn | info | debug | trace }
+  #  level: warn
+
+# Configuration for Flowmill's Kubernetes relay.
+relay:
+  repository: gcr.io/flowmill-gcr/k8s-relay
+  pullPolicy: Always
+
+  #log:
+  #  # uncomment the line below to change the minimum log level
+  #  # possible values: { error | warn | info | debug | trace }
+  #  level: warn
+
+# Configuration for Flowmill's Kubernetes watcher.
+watcher:
+  repository: gcr.io/flowmill-gcr/k8s-watcher
+  pullPolicy: Always
+
+nodeSelector: {}
+
+tolerations:
+- operator: "Exists"
+  effect: "NoExecute"
+- operator: "Exists"
+  effect: "NoSchedule"
+
+affinity: {}
+
+rbac:
+  create: true
+
+# If using segment.io's chamber (https://github.com/segmentio/chamber) to store agent keys,
+# uncomment below and update the chamber service name for which secrets were stored.
+# Agent keys must be stored using secret keys `FLOWMILL_AUTH_KEY_ID` and `FLOWMILL_AUTH_SECRET`.
+#chamberService: "my_chamber_service"
+
+podSecurityPolicy:
+  enabled: true
+  annotations: {}
+    ## Specify pod annotations
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#seccomp
+    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#sysctl
+    ##
+    # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+    # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
