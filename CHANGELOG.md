@@ -1,3 +1,7 @@
+## [0.8.3672] - 2020-11-06
+### Changed
+    - Fixes for k8s-collector crashes
+
 ## [0.8.3654] - 2020-11-04
 ### Changed
     - Fix kernel header fetching in the agent when using a proxy
