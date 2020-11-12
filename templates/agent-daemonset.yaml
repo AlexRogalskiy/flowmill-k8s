@@ -1,0 +1,283 @@
+# Flowmill agent daemonset: deploys the flowmill agent to each node
+# in the cluster.  The agent needs to be able to compile and install
+# eBPF programs in the node's kernel, so needs to run as root and
+# needs to mount /lib/modules and /usr/src from the node itself.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "flowmill-agent.fullname" . }}
+  annotations:
+  labels:
+    app.kubernetes.io/name: {{ include "flowmill-agent.fullname" . }}
+    helm.sh/chart: {{ include "flowmill.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "flowmill-agent.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        release_number: "3"
+        charts.flowmill.com/version: {{ .Chart.Version }}
+      labels:
+        app.kubernetes.io/name: {{ include "flowmill-agent.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ include "flowmill-agent.fullname" . }}
+          image: "{{ .Values.images.repository }}/{{ .Values.agent.imageName }}:{{ default .Values.flowmill.version .Values.agent.tag }}"
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          args:
+            - --config-file
+            - /etc/flowmill/config.yaml
+{{- if .Values.agent.bpfDumpFile }}
+            - --bpf-dump-file={{ .Values.agent.bpfDumpFile }}
+{{- end }}
+{{- if (default false .Values.agent.useDockerMetadata) }}
+            - --force-docker-metadata
+{{- if (default false .Values.agent.dumpDockerMetadata) }}
+            - --dump-docker-metadata
+{{- end }}
+{{- end }}
+{{- if not (default false .Values.agent.collectNomadMetadata) }}
+            - --disable-nomad-metadata
+{{- end }}
+{{- if .Values.agent.userlandTcp }}
+            - --enable-userland-tcp
+{{- end }}
+{{- if (default false .Values.agent.cpuMemIo.enabled) }}
+            - --enable-cpu-mem-io
+{{- if .Values.agent.cpuMemIo.minBatch }}
+            - --cpu-mem-io-min-batch
+            - {{quote .Values.agent.cpuMemIo.minBatch}}
+{{- end }}
+{{- if .Values.agent.cpuMemIo.maxBatch }}
+            - --cpu-mem-io-max-batch
+            - {{quote .Values.agent.cpuMemIo.maxBatch}}
+{{- end }}
+{{- if .Values.agent.cpuMemIo.pollBudgetUs }}
+            - --cpu-mem-io-poll-budget-us
+            - {{quote .Values.agent.cpuMemIo.pollBudgetUs}}
+{{- end }}
+{{- if .Values.agent.cpuMemIo.cooldown }}
+            - --cpu-mem-io-cooldown
+            - {{quote .Values.agent.cpuMemIo.cooldown}}
+{{- end }}
+{{- end }}
+{{- if .Values.log.console }}
+            - --log-console
+{{- end }}
+{{- if hasKey .Values.log "level" }}
+            - --{{ .Values.log.level }}
+{{- end }}
+{{- if hasKey .Values.agent "log" }}
+{{- if hasKey .Values.agent.log "whitelist" }}
+{{- if hasKey .Values.agent.log.whitelist "agentLog" }}
+            - --log-whitelist-agent-log={{ .Values.agent.log.whitelist.agentLog }}
+{{- end }}
+{{- if hasKey .Values.agent.log.whitelist "channel" }}
+          - --log-whitelist-channel={{ .Values.agent.log.whitelist.channel }}
+{{- end }}
+{{- if hasKey .Values.agent.log.whitelist "component" }}
+            - --log-whitelist-component={{ .Values.agent.log.whitelist.component }}
+{{- end }}
+{{- if hasKey .Values.agent.log.whitelist "cloudPlatform" }}
+            - --log-whitelist-cloud-platform={{ .Values.agent.log.whitelist.cloudPlatform }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if .Values.agent.additionalArgs }}
+{{ toYaml .Values.agent.additionalArgs | indent 12 }}
+{{- end }}
+          # TODO: liveness probe
+          env:
+            - name: "FLOWMILL_CLUSTER_NAME"
+              value: {{ quote .Values.flowmill.clusterName }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.enabled) }}
+            - name: "FLOWMILL_DEBUG_MODE"
+              value: "true"
+{{- end }}
+{{- end }}
+            - name: "FLOWMILL_DISABLE_HTTP_METRICS"
+              value: {{ quote (default false .Values.agent.disableHttpMetrics) }}
+{{- if (default false .Values.agent.runUnderGDB) }}
+            - name: "FLOWMILL_RUN_UNDER_GDB"
+              value: "gdb"
+{{- end }}
+{{- if hasKey .Values.auth "chamberService" }}
+            - name: "CHAMBER_SERVICE_NAME"
+              value: {{ quote .Values.auth.chamberService }}
+{{- else }}
+            - name: "FLOWMILL_AUTH_KEY_ID"
+              valueFrom:
+                secretKeyRef:
+                  key: flowmill_agent_key_id
+                {{- if .Values.auth.existingSecret }}
+                  name: {{ .Values.auth.existingSecret }}
+                {{- else }}
+                  name: {{ template "flowmill.fullname" . }}-agent-key
+                {{- end }}
+            - name: "FLOWMILL_AUTH_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  key: flowmill_agent_secret
+                {{- if .Values.auth.existingSecret }}
+                  name: {{ .Values.auth.existingSecret }}
+                {{- else }}
+                  name: {{ template "flowmill.fullname" . }}-agent-key
+                {{- end }}
+{{- end }}
+            - name: "FLOWMILL_KERNEL_HEADERS_AUTO_FETCH"
+              value: {{ quote (default true .Values.agent.fetchKernelHeaders) }}
+            - name: "FLOWMILL_AUTHZ_SERVER"
+              value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+            - name: "FLOWMILL_CRASH_COLLECTOR_HOST"
+              value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+            - name: "FLOWMILL_INTAKE_HOST"
+              value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+            - name: "FLOWMILL_INTAKE_PORT"
+              value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- if hasKey .Values.flowmill.intake "nameOverride" }}
+            - name: "FLOWMILL_INTAKE_NAME"
+              value: {{ .Values.flowmill.intake.nameOverride }}
+{{- end }}
+{{- if .Values.agent.exportBpfSrcFile }}
+            - name: "FLOWMILL_EXPORT_BPF_SRC_FILE"
+              value: {{ quote .Values.agent.exportBpfSrcFile }}
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+            - name: "FLOWMILL_MINIDUMP_DIR"
+              value: "/var/run/flowmill/host/run/flowmill/minidump"
+{{- end }}
+{{- end }}
+{{- if .Values.proxy.enabled }}
+            - name: "FLOWMILL_PROXY_HOST"
+              value: {{.Values.proxy.host | quote}}
+            - name: "FLOWMILL_PROXY_PORT"
+              value: {{.Values.proxy.port | quote}}
+            - name: "HTTP_PROXY"
+              value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+            - name: "HTTPS_PROXY"
+              value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+            - name: "http_proxy"
+              value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+            - name: "https_proxy"
+              value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+{{- if hasKey .Values.proxy "basicAuth" }}
+            - name: "FLOWMILL_PROXY_BASIC_AUTH"
+              value: {{.Values.proxy.basicAuth | quote}}
+{{- end }}
+{{- end }}
+{{- if .Values.agent.env }}
+{{ toYaml .Values.agent.env | indent 12 }}
+{{- end }}
+{{- if hasKey .Values.agent "resources" }}
+          resources:
+{{ toYaml .Values.agent.resources | indent 12 }}
+{{- end }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /var/run/flowmill/host/usr/src
+            name: usr-src
+            readOnly: true
+          - mountPath: /var/run/flowmill/host/lib/modules
+            name: lib-modules
+            readOnly: true
+{{- if (default true .Values.agent.fetchKernelHeaders) }}
+          - mountPath: /var/run/flowmill/host/etc
+            name: etc
+            readOnly: true
+          - mountPath: /var/run/flowmill/host/cache
+            name: host-var-cache
+            readOnly: false
+{{- end }}
+          - mountPath: /etc/flowmill
+            name: {{ include "flowmill.fullname" . }}-config
+            readOnly: true
+          - mountPath: /hostfs/sys/fs/cgroup
+            name: hostfs-sys-fs-cgroup
+            readOnly: true
+{{- if (default false .Values.agent.useDockerMetadata) }}
+          - mountPath: /var/run/docker.sock
+            name: docker-sock
+            readOnly: false
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+          - mountPath: /var/run/flowmill/host/run/flowmill
+            name: host-var-run-flowmill
+            readOnly: false
+{{- end }}
+{{- end }}
+      hostNetwork: true
+      hostPID: true
+{{- if .Values.rbac.create }}
+      serviceAccountName: {{ include "flowmill-agent.fullname" . }}
+{{- end }}
+      volumes:
+      - name: {{ include "flowmill.fullname" . }}-config
+        projected:
+          sources:
+          - configMap:
+              name: {{ include "flowmill.fullname" . }}-config
+              items:
+              - key: config.yaml
+                path: config.yaml
+      - name: usr-src
+        hostPath:
+          path: /usr/src
+          type: Directory
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+{{- if (default false .Values.agent.createLibModules) }}
+          type: DirectoryOrCreate
+{{- else }}
+          type: Directory
+{{- end }}
+{{- if (default true .Values.agent.fetchKernelHeaders) }}
+      - name: etc
+        hostPath:
+          path: /etc
+          type: Directory
+      - name: host-var-cache
+        hostPath:
+          path: /var/cache
+          type: DirectoryOrCreate
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+      - name: host-var-run-flowmill
+        hostPath:
+          path: /var/run/flowmill
+          type: DirectoryOrCreate
+{{- end }}
+{{- end }}
+{{- if (default false .Values.agent.useDockerMetadata) }}
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+{{- end }}
+      - name: hostfs-sys-fs-cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+    {{- with .Values.agent.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.agent.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.agent.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
