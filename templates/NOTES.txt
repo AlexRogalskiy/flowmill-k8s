@@ -1,2 +1,18 @@
 OK, the Flowmill agent has been deployed to your cluster
 in the {{ .Release.Namespace }} namespace.
+
+{{- if (hasKey .Values.auth "chamberService") -}}
+{{- else if (hasKey .Values.auth "existingSecret") -}}
+{{- else if (and (hasKey .Values.auth "keyId") (hasKey .Values.auth "keySecret")) -}}
+    {{- if (or (eq .Values.auth.keyId "") (eq .Values.auth.keySecret "")) }}
+    ERROR The key id or secret provided for flowmill were empty.
+    Flowmill agents will not be able to connect and send data
+
+    Please check the 'auth' section of your yaml file.
+    {{- end }}
+{{- else -}}
+ERROR No agent keys were provided in the helm chart. 
+Flowmill agents will not be able to connect and send data.
+
+Please check the 'auth' section of your yaml file
+{{- end -}}

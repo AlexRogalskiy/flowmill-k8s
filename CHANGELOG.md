@@ -1,3 +1,7 @@
+## [0.8.3681] - 2020-11-12
+### Changed
+    - Helm chart refactor to simplify deployment
+
 ## [0.8.3672] - 2020-11-06
 ### Changed
     - Fixes for k8s-collector crashes
