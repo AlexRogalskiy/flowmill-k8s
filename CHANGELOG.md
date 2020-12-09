@@ -1,3 +1,7 @@
+## [0.8.3723] - 2020-12-09
+### Changed
+    - Support for services running under Runit
+
 ## [0.8.3681] - 2020-11-12
 ### Changed
     - Helm chart refactor to simplify deployment
