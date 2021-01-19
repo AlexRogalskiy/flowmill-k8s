@@ -1,3 +1,7 @@
+## [0.8.3766] - 2021-01-19
+### Changed
+    - Improve collecting information from process commandline
+
 ## [0.8.3723] - 2020-12-09
 ### Changed
     - Support for services running under Runit
