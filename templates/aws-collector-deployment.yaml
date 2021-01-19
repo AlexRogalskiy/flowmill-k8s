@@ -1,0 +1,166 @@
+{{- if .Values.awsCollector.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "flowmill-aws-collector.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "flowmill-aws-collector.fullname" . }}
+    helm.sh/chart: {{ include "flowmill.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "flowmill-aws-collector.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        # This is here to allow us to do "zero-downtime" updates without an image change.
+        rollingUpdateVersion: "1"
+        charts.flowmill.com/version: {{ .Chart.Version }}
+      labels:
+        app.kubernetes.io/name: {{ include "flowmill-aws-collector.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: "{{ .Values.images.repository }}/{{ .Values.awsCollector.imageName }}:{{ default .Values.flowmill.version .Values.awsCollector.tag }}"
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        name: flowmill-aws-collector
+{{- if hasKey .Values.awsCollector "resources" }}
+        resources:
+{{ toYaml .Values.awsCollector.resources | indent 10 }}
+{{- end }}
+        args:
+{{- if .Values.log.console }}
+          - --log-console
+{{- end }}
+{{- if hasKey .Values.log "level" }}
+          - --{{ .Values.log.level }}
+{{- end }}
+{{- if hasKey .Values.awsCollector "log" -}}
+{{- if hasKey .Values.awsCollector.log "whitelist" }}
+{{- if hasKey .Values.awsCollector.log.whitelist "channel" }}
+          - --log-whitelist-channel={{ .Values.awsCollector.log.whitelist.channel }}
+{{- end }}
+{{- if hasKey .Values.awsCollector.log.whitelist "component" }}
+          - --log-whitelist-component={{ .Values.awsCollector.log.whitelist.component }}
+{{- end }}
+{{- if hasKey .Values.awsCollector.log.whitelist "cloudPlatform" }}
+          - --log-whitelist-cloud-platform={{ .Values.awsCollector.log.whitelist.cloudPlatform }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if .Values.awsCollector.additionalArgs }}
+{{ toYaml .Values.awsCollector.additionalArgs | indent 10 }}
+{{- end }}
+        env:
+          - name: "FLOWMILL_CLUSTER_NAME"
+            value: {{ quote .Values.flowmill.clusterName }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.enabled) }}
+          - name: "FLOWMILL_DEBUG_MODE"
+            value: "true"
+{{- end }}
+{{- end }}
+{{- if (default false .Values.awsCollector.runUnderGDB) }}
+          - name: "FLOWMILL_RUN_UNDER_GDB"
+            value: "gdb"
+{{- end }}
+{{- if hasKey .Values.auth "chamberService" }}
+          - name: "CHAMBER_SERVICE_NAME"
+            value: {{ quote .Values.auth.chamberService }}
+{{- else }}
+          - name: "FLOWMILL_AUTH_KEY_ID"
+            valueFrom:
+              secretKeyRef:
+                key: flowmill_agent_key_id
+              {{- if .Values.auth.existingSecret }}
+                name: {{ .Values.auth.existingSecret }}
+              {{- else }}
+                name: {{ template "flowmill.fullname" . }}-agent-key
+              {{- end }}
+          - name: "FLOWMILL_AUTH_SECRET"
+            valueFrom:
+              secretKeyRef:
+                key: flowmill_agent_secret
+              {{- if .Values.auth.existingSecret }}
+                name: {{ .Values.auth.existingSecret }}
+              {{- else }}
+                name: {{ template "flowmill.fullname" . }}-agent-key
+              {{- end }}
+{{- end }}
+{{- if hasKey .Values.flowmill.services "host" }}
+          - name: "FLOWMILL_AUTHZ_SERVER"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+          - name: "FLOWMILL_CRASH_COLLECTOR_HOST"
+            value: {{ default "app.flowmill.com" .Values.flowmill.services.host }}
+{{- end }}
+          - name: "FLOWMILL_INTAKE_HOST"
+            value: {{ default "intake.flowmill.com" .Values.flowmill.intake.host }}
+          - name: "FLOWMILL_INTAKE_PORT"
+            value: "{{ default 443 .Values.flowmill.intake.port }}"
+{{- if hasKey .Values.flowmill.intake "nameOverride" }}
+          - name: "FLOWMILL_INTAKE_NAME"
+            value: {{ .Values.flowmill.intake.nameOverride }}
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+          - name: "FLOWMILL_MINIDUMP_DIR"
+            value: "/var/run/flowmill/host/run/flowmill/minidump"
+{{- end }}
+{{- end }}
+{{- if .Values.proxy.enabled }}
+          - name: "FLOWMILL_PROXY_HOST"
+            value: {{.Values.proxy.host | quote}}
+          - name: "FLOWMILL_PROXY_PORT"
+            value: {{.Values.proxy.port | quote}}
+          - name: "HTTP_PROXY"
+            value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+          - name: "HTTPS_PROXY"
+            value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+          - name: "http_proxy"
+            value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+          - name: "https_proxy"
+            value: "http://{{ .Values.proxy.host }}:{{ .Values.proxy.port }}"
+{{- if hasKey .Values.proxy "basicAuth" }}
+          - name: "FLOWMILL_PROXY_BASIC_AUTH"
+            value: {{.Values.proxy.basicAuth | quote}}
+{{- end }}
+{{- end }}
+{{- if .Values.awsCollector.env }}
+{{ toYaml .Values.awsCollector.env | indent 10 }}
+{{- end }}
+{{- if hasKey .Values.flowmill "debug" }}
+{{- if (default false .Values.flowmill.debug.storeMinidump) }}
+        volumeMounts:
+        - mountPath: /var/run/flowmill/host/run/flowmill
+          name: host-var-run-flowmill
+          readOnly: false
+      volumes:
+      - name: host-var-run-flowmill
+        hostPath:
+          path: /var/run/flowmill
+          type: DirectoryOrCreate
+{{- end }}
+{{- end }}
+      terminationGracePeriodSeconds: 30
+      securityContext: {}
+    {{- with .Values.awsCollector.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8}}
+    {{- end }}
+    {{- with .Values.awsCollector.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.awsCollector.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}      
+    {{- end }}
+{{- end }}
