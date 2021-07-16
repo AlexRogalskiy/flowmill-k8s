@@ -22,7 +22,7 @@ auth:
 
 flowmill:
   clusterName: TODO_CHOOSE_YOUR_CLUSTER_NAME_HERE
-  version: latest-v0.8
+  version: latest-v0.9
   services:
     host: app.flowmill.com
   intake:

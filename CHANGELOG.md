@@ -1,3 +1,7 @@
+## [0.9.4006.168] - 2021-07-16
+### Changed
+    - Stability and bug fixes.
+
 ## [0.8.3766] - 2021-01-19
 ### Changed
     - Improve collecting information from process commandline
