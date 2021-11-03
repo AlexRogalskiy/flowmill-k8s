@@ -1,0 +1,9 @@
+# TODO: Update these values based on your deployment
+# You can also download a preconfigured version of this file from:
+#       https://app.flowmill.com/agents?activeTab=deployment
+flowmill:
+  clusterName: YOUR_CLUSTER_NAME
+
+auth:
+  keyId: ""
+  keySecret: ""
