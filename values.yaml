@@ -52,6 +52,8 @@ proxy:
 agent:
   imageName: agent
   nodeSelector: {}
+  httpMetrics:
+    disabled: false
 
   tolerations:
   - operator: "Exists"

@@ -42,6 +42,9 @@ spec:
             - --dump-docker-metadata
 {{- end }}
 {{- end }}
+{{- if .Values.agent.httpMetrics.disabled }}
+            - --disable-http-metrics
+{{- end }}
 {{- if not (default false .Values.agent.collectNomadMetadata) }}
             - --disable-nomad-metadata
 {{- end }}
