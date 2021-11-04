@@ -1,5 +1,6 @@
-## [0.9.4027.365] - 2021-11-03
+## [1.0.0] - 2021-11-03
 ### Changed
+    - Helm chart only release. 
     - Exposed a new flag to disable http metrics.
 ## [0.9.4006.168] - 2021-07-16
 ### Changed
